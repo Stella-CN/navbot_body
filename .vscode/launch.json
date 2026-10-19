@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "navbot_body: OpenOCD attach (CMSIS-DAP, manual)",
+      "type": "cortex-debug",
+      "request": "attach",
+      "servertype": "openocd",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/build/Debug/navbot_body.elf",
+      "device": "STM32F407VE",
+      "configFiles": [
+        "${workspaceFolder}/openocd.cfg"
+      ],
+      "gdbPath": "arm-none-eabi-gdb",
+      "showDevDebugOutput": "none",
+      "rtos": "FreeRTOS"
+    }
+  ]
+}

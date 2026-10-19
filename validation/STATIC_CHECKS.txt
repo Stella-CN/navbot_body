@@ -1,0 +1,48 @@
+PASS: STM32F407VET6 / LQFP100 target
+PASS: 23 motor/encoder/UART/ADC/SWD pin assignments match board evidence
+PASS: pin enumeration complete and unique
+PASS: PB10 reserved for future IMU driver
+PASS: PB11 reserved for future IMU driver
+PASS: PB12 reserved for future IMU driver
+PASS: 8MHz HSE -> 168MHz SYSCLK, APB1 42MHz / APB2 84MHz, PLLQ 48MHz
+PASS: all eight PWM channels: 10kHz, zero initial duty
+PASS: quadrature encoder counters use native 32/16/16/32-bit ranges
+PASS: template never starts motors, encoders, or UART transfers
+PASS: HAL tick -> TIM6_DAC; single RTOS SysTick handler -> CMSIS wrapper
+PASS: USART3 460800, DMA1 RX stream1 / TX stream3 channel4, circular RX
+PASS: RTOS-capable UART/DMA interrupts at logical priority5, group4
+PASS: all four application tasks own static TCBs and stacks
+PASS: absolute task periods: control100 / comm200 / sensor100 / monitor10 Hz
+PASS: stack/heap hooks and kernel assert latch motor inhibition
+PASS: CPU fault handlers latch motor inhibition
+PASS: linker: 512KiB Flash, 128KiB DMA-visible SRAM, separate 64KiB CCM
+PASS: all generated CMake source/include references exist: []
+PASS: VS Code / CMake / workspace JSON parses
+PASS: no configure-on-open; manual OpenOCD CMSIS-DAP attach configuration
+PASS: no firmware build artifacts or build directory
+PASS: project/IOC/workspace identifiers consistently use navbot_body
+PASS: obsolete firmware directory removed
+PASS: cross toolchain selected before language detection; compiler probes limited to static libraries
+PASS: explicit Applications/BSP source list; BSP declarations propagate to RTOS/HAL objects
+PASS: root/generated executable use consistent plain target_link_libraries signature
+PASS: kernel initialization state and unexpected scheduler return are guarded
+PASS: generated task entry points delegate once to the Applications layer
+PASS: register-level motor inhibition belongs to BSP; no obsolete inline safety implementation
+PASS: hard-float CM4F port enables FPU and preserves floating-point task context
+PASS: CMSIS wrapper supplies idle/timer static allocation callbacks
+PASS: inactive RTC HSE divider is legal (8MHz/8=1MHz); RTC remains disabled
+PASS: 1MHz OpenOCD adapter override applied after target script defaults
+PASS: manual FreeRTOS OpenOCD attach references the renamed ELF; no automatic build/flash
+PASS: fault inhibition checks peripheral clocks and latches with interrupts disabled
+PASS: HAL initialization installs dedicated TIM6 tick at logical priority15
+PASS: battery ADC: PB0/channel8 only, 21MHz ADC clock, 12-bit, 480-cycle sample
+PASS: PWM pins retain pulldowns while outputs remain unstarted
+PASS: generated PWM and encoder GPIO alternate function families match F407 mappings
+PASS: all four TIM1 and both TIM9 PWM channels are initialized
+PASS: DMA warnings do not alter widths, increment, priority, FIFO, TX mode or handle linkage
+PASS: Thumb mode and debug ELF suffix explicitly match Cortex-M4 and launch configuration
+PASS: task stack word counts agree with documented byte budgets (6656B total)
+PASS: maintained task/BSP paths have no heap allocation or ownership transfers
+PASS: HAL priority grouping and single SVC/PendSV kernel vector ownership agree
+
+46/46 static checks passed; no compiler/probe invoked.

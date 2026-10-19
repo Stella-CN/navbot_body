@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "navbot_body: static validation",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "${workspaceFolder}/tools/static_validate.py"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "navbot_body: configure Debug (manual)",
+      "type": "process",
+      "command": "cmake",
+      "args": [
+        "--preset",
+        "Debug"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "navbot_body: build Debug (manual)",
+      "type": "process",
+      "command": "cmake",
+      "args": [
+        "--build",
+        "--preset",
+        "Debug"
+      ],
+      "group": "build",
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "categories": {
+    "generator_environment_warning": {
+      "count": 138,
+      "sample": "2026-10-19 18:14:50,104 [WARN] ApiDb:259 - Overriding images path with different value:  => /Applications/STMicroelectronics/STM32CubeMX.app/Contents/Resources//db//plugins/mcufinder/images/"
+    },
+    "rtos_api_schema": {
+      "count": 1,
+      "sample": "2026-10-19 18:14:50,995 [WARN] SupportedApi:132 - Cannot load RTOS API schema: s4s-elt-must-match.1: The content of 'definitions' must match (annotation?, (simpleType | complexType)?, (unique | key | keyref)*)). A problem was found starting at: attribute."
+    },
+    "unselected_expansion_pack": {
+      "count": 4,
+      "sample": "2026-10-19 18:14:54,211 [ERROR] Engine:466 - /Users/lvjiaqing/.stm32cubemx/thirdparties/pdsc/STMicroelectronics.X-CUBE-SMBUS.2.1.1.pdsc: PDSC version is not supported"
+    },
+    "unselected_rif_virtual_pin": {
+      "count": 1,
+      "sample": "2026-10-19 18:14:55,443 [INFO] ImportTextPane:234 - (OptionalMessage_ERROR) Pin37 (VP_RIF_VS_RIF1) cannot be retrieved for this MCU"
+    },
+    "dma_import_order": {
+      "count": 20,
+      "sample": "2026-10-19 18:14:56,186 [INFO] ImportTextPane:234 - (OptionalMessage_ERROR) IP (DMA) : Parameter (Instance) has Id (USART3_RX) currently not set"
+    },
+    "freertos_database_version": {
+      "count": 18,
+      "sample": "2026-10-19 18:14:56,187 [WARN] IP:2250 - configHEAP_CLEAR_MEMORY_ON_FREE not found: check if there is a RefParameter without a condition."
+    },
+    "empty_optional_rtos_table": {
+      "count": 1,
+      "sample": "2026-10-19 18:14:58,675 [WARN] FreeRTOS:1024 - Null or empty value: should not occur! (nothing added to the table)"
+    }
+  },
+  "unresolved_errors": []
+}

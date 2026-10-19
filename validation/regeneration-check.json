@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "clock_plugin_error": false,
+  "pinout_plugin_error": false,
+  "core_files_with_user_regions_preserved": 22,
+  "maintained_files_preserved": 16,
+  "unresolved_generator_errors": 0,
+  "compile_or_probe_invoked": false
+}

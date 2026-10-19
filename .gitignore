@@ -1,0 +1,33 @@
+# Local metadata and caches
+.DS_Store
+._*
+__pycache__/
+*.py[cod]
+.cache/
+
+# Local CMake settings and generated output
+CMakeUserPresets.json
+build/
+Build/
+build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# Firmware build artifacts
+*.o
+*.obj
+*.d
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+
+# Local logs and editor temporary files
+*.log
+*.tmp
+*.bak
+*.swp

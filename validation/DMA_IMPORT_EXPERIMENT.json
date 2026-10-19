@@ -1,0 +1,11 @@
+{
+  "scope": "isolated CubeMX generation only; no compile, probe or publication",
+  "input_change": "USART3 RX/TX DMA priority LOW -> HIGH in temporary IOC only",
+  "observed_generated_high_priority": {
+    "rx": true,
+    "tx": true
+  },
+  "dma_import_diagnostic_count": 20,
+  "result": "PASS",
+  "production_priority": "LOW; production IOC and sources unchanged"
+}
