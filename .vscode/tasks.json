@@ -4,11 +4,11 @@
     {
       "label": "navbot_body: static validation",
       "type": "process",
-      "command": "python3",
-      "args": [
-        "${workspaceFolder}/tools/static_validate.py"
-      ],
-      "problemMatcher": []
+      "command": "${workspaceFolder}/scripts/check.sh",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
     },
     {
       "label": "navbot_body: configure Debug (manual)",
@@ -18,21 +18,74 @@
         "--preset",
         "Debug"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
     },
     {
       "label": "navbot_body: build Debug (manual)",
       "type": "process",
-      "command": "cmake",
+      "command": "${workspaceFolder}/scripts/build.sh",
       "args": [
-        "--build",
-        "--preset",
         "Debug"
       ],
-      "group": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "problemMatcher": [
         "$gcc"
-      ]
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "navbot_body: clean Debug",
+      "type": "process",
+      "command": "${workspaceFolder}/scripts/clean.sh",
+      "args": [
+        "Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "navbot_body: symbols Debug",
+      "type": "process",
+      "command": "${workspaceFolder}/scripts/symbols.sh",
+      "args": [
+        "Debug"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "navbot_body: tool diagnostics",
+      "type": "process",
+      "command": "${workspaceFolder}/scripts/doctor.sh",
+      "args": [],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "navbot_body: format check",
+      "type": "process",
+      "command": "${workspaceFolder}/scripts/format.sh",
+      "args": [
+        "--check"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
     }
   ]
 }

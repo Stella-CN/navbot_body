@@ -2,7 +2,7 @@
 
 NavBot C30D 小脑固件模板，STM32F407VET6 + HAL + FreeRTOS + C11。
 
-当前仅完成模板生成与静态审查；未配置构建、编译、链接、下载或连接探针。已用 `cmake --list-presets=all` 只读解析预设。电机闭环、协议、IMU、采样和看门狗尚未实现，输出保持禁用。
+截至2026-10-20，模板已完成静态审查，并通过开发脚本完成Debug配置、编译和链接，生成ELF/BIN/HEX；未连接探针、下载或运行实机测试。电机闭环、协议、IMU、采样和看门狗尚未实现，输出保持禁用。
 
 ## 工程结构
 
@@ -18,6 +18,7 @@ navbot_body/
 ├── Drivers/               # STM32 HAL / CMSIS（组件许可原样保留）
 ├── Middlewares/           # CubeF4自带FreeRTOS与CMSIS-RTOS2
 ├── cmake/                 # 生成的工具链、HAL/RTOS源文件清单
+├── scripts/               # 构建、清理、诊断、检查、格式化与符号导出
 ├── tools/                 # 纯静态检查与隔离再生成脚本
 ├── validation/            # 审查结论、依赖来源与告警验证证据
 ├── .vscode/               # 手动配置/构建/静态检查/附加调试入口
@@ -96,12 +97,15 @@ UART/DMA中断逻辑优先级5，HAL TIM6与RTOS tick为15，NVIC分组4。数�
 python3 tools/static_validate.py
 ```
 
-后续手动构建命令（当前未执行）：
+推荐使用开发脚本（Debug已在本机编译通过）：
 
 ```sh
-cmake --preset Debug
-cmake --build --preset Debug
+./scripts/doctor.sh
+./scripts/build.sh Debug 4
+./scripts/symbols.sh Debug
 ```
+
+完整脚本用法见 [scripts/README.md](scripts/README.md)。格式脚本已使用clang-format23.1.3验证。原生 `cmake --preset Debug` / `cmake --build --preset Debug` 入口仍可使用；脚本额外导出BIN/HEX和大小报告。
 
 OpenOCD使用CMSIS-DAP/DAPLink、SWD；在加载 `target/stm32f4x.cfg` **之后**设置 `adapter speed 1000`，避免目标脚本的2000kHz默认值覆盖。Cortex-Debug配置为FreeRTOS手动attach，不附带自动构建、program/erase/reset任务。启动调试仍会连接并可能暂停目标；探针、复位线和调试会话均未实测。
 
@@ -114,8 +118,6 @@ python3 tools/regenerate.py
 ```
 
 macOS默认使用本机CubeMX内置JRE；其他安装位置可用 `--cubemx-dir` 指向Resources目录。脚本在临时副本中生成，检查告警类别、Core USER CODE区域和维护文件保持性，并运行静态断言；全部通过后才复制回工程。失败保留原源文件，只更新本地诊断证据。脚本不执行编译或探针命令。
-
-当前剩余生成器告警及影响判断见[全面静态审查](validation/STATIC_VALIDATION.md)，分类结果见 `validation/generator-diagnostics.json`。原始 `.log` 按仓库规则保留在本地，不纳入版本控制。今后出现未识别的导入/生成错误，脚本会停止发布，不能仅凭两项插件返回false宣称工程正确。
 
 - [ST UM1718：CubeMX脚本与生成](https://www.st.com/resource/en/user_manual/dm00104712-stm32cubemx-for-stm32-configuration-and-initialization-c-code-generation-stmicroelectronics.pdf)
 - [CMSIS-RTOS2等待与tick回绕](https://arm-software.github.io/CMSIS_6/main/RTOS2/group__CMSIS__RTOS__Wait.html)

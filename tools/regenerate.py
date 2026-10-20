@@ -27,7 +27,7 @@ def user_regions(root):
 def protected_files(root):
     files = [root / name for name in ('CMakeLists.txt', '.clang-format', 'openocd.cfg',
                                       'navbot_body.code-workspace', 'README.md', 'CMakePresets.json')]
-    for directory in ('Applications', 'BSP', '.vscode', 'tools'):
+    for directory in ('Applications', 'BSP', '.vscode', 'tools', 'scripts'):
         files.extend(path for path in (root / directory).rglob('*') if path.is_file())
     return {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in files}
