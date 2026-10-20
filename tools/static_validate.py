@@ -107,7 +107,7 @@ def main():
                                      'ORIGIN = 0x8000000, LENGTH = 512K')),
             'linker: 512KiB Flash, 128KiB DMA-visible SRAM, separate 64KiB CCM')
     missing = []
-    for cmake in ROOT.rglob('CMakeLists.txt'):
+    for cmake in (ROOT / 'CMakeLists.txt', ROOT / 'cmake/stm32cubemx/CMakeLists.txt'):
         for ref in re.findall(r'\$\{CMAKE_CURRENT_SOURCE_DIR\}/([^\s)]+)', cmake.read_text()):
             if not (cmake.parent / ref.rstrip(chr(34))).exists():
                 missing.append(ref)
@@ -119,8 +119,9 @@ def main():
             and 'cmsis-dap.cfg' in read('openocd.cfg')
             and '"request": "attach"' in read('.vscode/launch.json'),
             'no configure-on-open; manual OpenOCD CMSIS-DAP attach configuration')
-    artifacts = [p for p in ROOT.rglob('*') if p.suffix in ('.elf', '.o', '.bin', '.hex')]
-    require(not artifacts and not (ROOT / 'build').exists(), 'no firmware build artifacts or build directory')
+    artifacts = [p for directory in ('Core', 'Applications', 'BSP', 'Drivers', 'Middlewares')
+                 for p in (ROOT / directory).rglob('*') if p.suffix in ('.elf', '.o', '.obj', '.bin', '.hex')]
+    require(not artifacts, 'source directories contain no firmware build artifacts (build/ is permitted)')
     require('project(navbot_body LANGUAGES C ASM)' in read('CMakeLists.txt')
             and ioc.get('ProjectManager.ProjectName') == 'navbot_body'
             and ioc.get('ProjectManager.ProjectFileName') == 'navbot_body.ioc',

@@ -43,4 +43,3 @@ _Noreturn void C30D_TemplatePanic(void)
         __WFI();
     }
 }
-
