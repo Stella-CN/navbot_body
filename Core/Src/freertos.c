@@ -87,7 +87,7 @@ const osThreadAttr_t sensorTask_attributes = {
 };
 /* Definitions for monitorTask */
 osThreadId_t monitorTaskHandle;
-uint32_t monitorStack[ 256 ];
+uint32_t monitorStack[ 512 ];
 osStaticThreadDef_t monitorTcb;
 const osThreadAttr_t monitorTask_attributes = {
   .name = "monitorTask",

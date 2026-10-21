@@ -1,6 +1,12 @@
 #include "app_tasks.h"
 #include "cmsis_os2.h"
 #include "c30d_safety.h"
+#include "imu_diagnostics.h"
+#include "c30d_soft_i2c.h"
+#include "c30d_oled.h"
+#include "FreeRTOS.h"
+#include "task.h"
+extern osThreadId_t controlTaskHandle, commTaskHandle, sensorTaskHandle, monitorTaskHandle;
 
 void Navbot_ControlTask(void *argument)
 {
@@ -57,16 +63,31 @@ void Navbot_SensorTask(void *argument)
     {
         C30D_TemplatePanic();
     }
-    /* Future owner of bounded ADC/IMU acquisition and validity flags.
-     * IMU pins remain inputs; no sensor driver or fabricated measurements. */
+    static C30D_Imu imu;
+    static Navbot_Attitude attitude;
+    C30D_ImuInit(&imu);
+    Navbot_AttitudeInit(&attitude);
     for (;;)
     {
-
+        uint32_t start = C30D_Cycles();
+        C30D_ImuPoll(&imu, osKernelGetTickCount());
+        Navbot_AttitudeUpdate(&attitude, &imu.data, osKernelGetTickCount());
+        uint32_t elapsed = C30D_ElapsedUs(start);
+        if (elapsed > imu.data.execution_max_us)
+        {
+            imu.data.execution_max_us = elapsed;
+        }
+        Navbot_ImuPublish(&imu.data, &attitude.data);
         deadline += period;
         if (osDelayUntil(deadline) != osOK)
         {
-            /* Missed deadline: latch the template rather than spin/catch up. */
-            C30D_TemplatePanic();
+            ++imu.data.deadline_misses;
+            imu.data.valid = 0;
+            Navbot_AttitudeUpdate(&attitude, &imu.data, osKernelGetTickCount());
+            deadline = osKernelGetTickCount();
+            Navbot_ImuPublish(&imu.data, &attitude.data);
+            (void)osDelay(period);
+            deadline = osKernelGetTickCount();
         }
     }
 }
@@ -80,15 +101,19 @@ void Navbot_MonitorTask(void *argument)
     {
         C30D_TemplatePanic();
     }
-    /* Future owner of health aggregation and stack-watermark diagnostics.
-     * Watchdog feeding must require fresh control and communication health. */
+    C30D_OledInit();
+    deadline = osKernelGetTickCount();
     for (;;)
     {
-
+        Navbot_ImuDisplay(osKernelGetTickCount());
+        const osThreadId_t handles[4] = {controlTaskHandle, commTaskHandle, sensorTaskHandle, monitorTaskHandle};
+        for (unsigned i = 0; i < 4U; ++i)
+        {
+            navbot_stack_free_words[i] = uxTaskGetStackHighWaterMark((TaskHandle_t)handles[i]);
+        }
         deadline += period;
         if (osDelayUntil(deadline) != osOK)
         {
-            /* Missed deadline: latch the template rather than spin/catch up. */
             C30D_TemplatePanic();
         }
     }

@@ -7,6 +7,8 @@
 | `doctor.sh` | `./scripts/doctor.sh` | 检查构建工具及GCC目标，列出可选工具；不探测硬件 |
 | `build.sh` | `./scripts/build.sh [Debug\|Release] [jobs]` | 配置、编译、链接，导出ELF/BIN/HEX和大小报告 |
 | `clean.sh` | `./scripts/clean.sh [Debug\|Release]` | 调用CMake clean并删除本脚本导出的报告/镜像，保留配置与日志 |
+| `test-attitude.sh` | `./scripts/test-attitude.sh` | 主机运行静态标定/四元数姿态合成运动与异常测试，不连接硬件 |
+| `test-imu.sh` | `./scripts/test-imu.sh` | 主机编译并运行 IMU 状态机模拟总线测试，启用未定义行为检查，不连接硬件 |
 | `check.sh` | `./scripts/check.sh` | Bash语法检查及固件静态断言，不编译 |
 | `format.sh` | `./scripts/format.sh [--check\|--write]` | 默认只检查；`--write`格式化Applications/BSP中的C/C++代码 |
 | `symbols.sh` | `./scripts/symbols.sh [Debug\|Release]` | 对已有ELF导出按地址排序的已定义符号表及大小报告 |
