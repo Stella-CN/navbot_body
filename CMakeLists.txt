@@ -30,8 +30,16 @@ target_include_directories(stm32cubemx INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/BSP/C30D"
 )
 target_sources(${PROJECT_NAME} PRIVATE
+    Applications/attitude.c
     Applications/app_tasks.c
+    Applications/imu_diagnostics.c
+    BSP/C30D/c30d_soft_i2c.c
+    BSP/C30D/c30d_imu.c
+    BSP/C30D/c30d_oled.c
     BSP/C30D/c30d_safety.c
+)
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    "$<$<CONFIG:Debug>:C30D_IMU_TEST_HOOKS>"
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
     "$<$<COMPILE_LANGUAGE:C>:-Wall;-Wextra;-Wpedantic>"

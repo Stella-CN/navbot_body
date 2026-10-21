@@ -1,0 +1,44 @@
+C30D ICM20948 / OLED 实板验证 — 2026-10-21
+
+最终固件：Debug ELF SHA256 723d5abbffaae504150f48c66580d6830e8bd9bf3d546e07bb3cc69d0507415e
+BIN SHA256 a0affd23bb9e11326e583e807c9235fb786780c8c8583086d947104a2f628820
+资源：Debug FLASH 41004B，RAM 27144B；Release FLASH 24780B，RAM 27136B。
+探针：Horco CMSIS-DAPv2，序列号132765403554，FW Horco v0.2，SWD 1000kHz。
+板卡：Cortex-M4，STM32F4设备ID 0x101f6413，512KiB Flash。
+
+实现与边界
+- PB10/PB11 开漏软件I2C，ICM20948 0x68 / WHO_AM_I=0xEA。
+- 分阶段初始化及配置读回，六轴±2g/±250dps、DLPF cfg3、内部ODR225Hz。
+- sensorTask 100Hz检查data-ready并连续读取14字节。原始值、m/s²、rad/s、温度、序号、读事务开始tick及DWT周期诊断按值发布。
+- 总线错误立即失效；无新样本30ms判过期；失败等待1秒后重新初始化，新样本成功才计恢复。
+- OLED按厂家128x64四线串行接线：PD14 CLK，PD13 DIN，PD11 DC，PD12 RST，约10Hz显示。
+- OLED显示ACC mg、GYRO MDPS、温度C、DT微秒、N序号、AGE毫秒、H当前健康、E最后错误、R恢复数；失效时不把旧数据当作当前值显示。
+- monitorTask静态栈由1024B增至2048B，配置与IOC一致；采集/显示缓冲分属各自任务，快照用短临界区按值复制。
+- 电机始终禁止，无enable接口，不启动PWM/编码器。无磁力计、姿态解算、标定、坐标变换、闭环或通信协议。
+
+最终验证结果
+- Debug与Release编译成功，无本次编译告警；Release符号表不含c30d_imu_test_fault，故障注入由Debug专用编译定义控制。
+- OpenOCD program verify reset完成，Verified OK；原厂家512KiB Flash备份仍在build/Debug/hardware-validation/original-flash.bin。
+- 46/46静态检查、维护代码格式检查、Git差异空白检查（尊重生成代码CRLF）通过。
+- 主机真实驱动/模拟总线测试（UBSan）通过：初始化读回、符号/单位转换、NACK退避/恢复、过期、错误身份/配置、长期运行与tick回绕。
+- 实板30秒等待窗口：序号1775→4796，新增3021；目标tick差30210ms，约100Hz（包含主机再次连接时间）。
+- 成功样本间隔9995..10003us；轮询间隔9992..10001us；采集最大观察耗时1802us（cleanup快照）；deadline_misses=0。
+- OLED最大观察刷新耗时34113us，实测四任务最小剩余栈471/471/299/290个32位字，即1884/1884/1196/1160B。
+- 真实访问无设备地址0x69触发NACK：样本停止增长、valid=0、health=2、NACK计数增加；清除后自动恢复。
+- 模拟SCL低电平等待触发超时：valid=0、health=2、超时计数增加；清除后自动恢复。
+- 屏蔽data-ready触发30ms过期：valid=0、health=5、过期计数增加；清除后自动恢复。累计恢复3次。
+- 每次故障/恢复快照均断言TIM1/9/10/11 CCER、全部8路CCR、TIM1 MOE、CFSR/HFSR为零。
+- 用户已确认实物OLED正常显示，IMU数值与N序号持续更新；本次最终改动只增加栈并保留显示接线与布局。
+- 完成后重启并清除注入：sequence=195、valid=1、health=1、NACK/timeout/stale/recovery/deadline均0；随后恢复运行并关闭调试服务器。
+
+证据与复现
+详细日志：build/Debug/imu-validation/flash.log、results.json、bench-console.txt、各故障/恢复及soak-end.log、final-clean.log。
+主机测试：./scripts/test-imu.sh
+实板测试：先明确启动Debug固件与openocd -f openocd.cfg，再执行python3 tools/hardware_validate_imu.py（会暂停/恢复目标并注入故障，不自动烧录）。
+
+限制
+统计是本次板端运行观察值，不是完整WCET、长期漂移或全故障覆盖。内部225Hz样本没有逐帧缓存；应用读取100Hz最新值。
+微秒间隔来自CPU DWT而非IMU内部时间戳。模拟超时未物理短接总线；未测试物理断线、硬件上电异常、电气波形或磁力计。
+OLED接口无ACK/读回，软件帧发送正常与实物可见性分别以内部诊断和用户观察确认。
+参考：TDK DS-000189 v1.5及本机WHEELTEC C30D基础例程的OLED/ICM20948接线与寄存器配置。
+https://product.tdk.com/system/files/dam/doc/product/sensor/mortion-inertial/imu/data_sheet/ds-000189-icm-20948-v1.5.pdf

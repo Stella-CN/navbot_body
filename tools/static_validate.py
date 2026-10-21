@@ -45,7 +45,7 @@ def main():
     pins = [ioc.get(f'Mcu.Pin{i}') for i in range(int(ioc['Mcu.PinsNb']))]
     require(None not in pins and len(pins) == len(set(pins)), 'pin enumeration complete and unique')
     for pin in ('PB10', 'PB11', 'PB12'):
-        require(ioc.get(pin + '.Signal') == 'GPIO_Input', f'{pin} reserved for future IMU driver')
+        require(ioc.get(pin + '.Signal') == 'GPIO_Input', f'{pin} safe input bootstrap before BSP ownership')
     main_c, tim = read('Core/Src/main.c'), read('Core/Src/tim.c')
     require(all(s in main_c for s in ('PLLM = 8;', 'PLLN = 336;', 'PLLP = RCC_PLLP_DIV2;',
                                       'PLLQ = 7;', 'APB1CLKDivider = RCC_HCLK_DIV4;',
@@ -199,10 +199,10 @@ def main():
             and 'PROPERTIES SUFFIX ".elf"' in cmake_root,
             'Thumb mode and debug ELF suffix explicitly match Cortex-M4 and launch configuration')
     require(all(int(entry.split(',')[2]) * 4 == expected for entry, expected in zip(
-                ioc['FREERTOS.Tasks01'].split(';'), (2048, 2048, 1536, 1024))),
-            'task stack word counts agree with documented byte budgets (6656B total)')
+                ioc['FREERTOS.Tasks01'].split(';'), (2048, 2048, 1536, 2048))),
+            'task stack word counts agree with documented byte budgets (7680B total)')
     require(not re.search(r'\b(malloc|calloc|realloc|free|pvPortMalloc|vPortFree)\s*\(',
-                          application + read('BSP/C30D/c30d_safety.c')),
+                          '\n'.join(p.read_text() for directory in ('Applications', 'BSP') for p in (ROOT / directory).rglob('*.c'))),
             'maintained task/BSP paths have no heap allocation or ownership transfers')
     require('HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4)' in read('Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c')
             and '#define vPortSVCHandler    SVC_Handler' in cfg
