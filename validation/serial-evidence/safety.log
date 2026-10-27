@@ -1,0 +1,9 @@
+C30D_Cycles () at /Users/lvjiaqing/MyProjects/MyRobot/NavBot/deps/navbot_body/BSP/C30D/c30d_soft_i2c.c:11
+11	uint32_t C30D_Cycles(void) { return DWT->CYCCNT; }
+SAFE 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+$1 = {471, 325, 293, 281}
+$2 = {sequence = 718, timestamp_ms = 7460, valid = 1, health = 1, last_error = 0, who_am_i = 234, accel_raw = {-313, -2000, 16688}, gyro_raw = {-115, 28, -37}, temperature_raw = 6240, accel_m_s2 = {-0.18734628, -1.19710088, 9.98860931}, gyro_rad_s = {-0.0153215928, 0.00373047474, -0.00492955605}, temperature_c = 39.6899109, period_us = 10070, period_min_us = 9579, period_max_us = 10629, poll_period_us = 10068, poll_min_us = 9585, poll_max_us = 10625, execution_max_us = 1837, nack_count = 0, timeout_count = 0, stuck_count = 0, id_errors = 0, config_errors = 0, not_ready_count = 0, stale_count = 0, retry_count = 1, recovery_count = 0, deadline_misses = 0}
+$3 = 0
+$4 = 0
+$5 = 0
+$6 = 0

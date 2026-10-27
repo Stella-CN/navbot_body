@@ -1,0 +1,8 @@
+0x08005b3c in prvCheckTasksWaitingTermination () at /Users/lvjiaqing/MyProjects/MyRobot/NavBot/deps/navbot_body/Middlewares/Third_Party/FreeRTOS/Source/tasks.c:3640
+3640	{
+verified 58424 bytes in 0.172161s (331.403 KiB/s)
+$1 = {471, 325, 293, 281}
+$2 = 0
+$3 = 0
+$4 = 0
+$5 = 0
