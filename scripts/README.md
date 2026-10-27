@@ -7,6 +7,7 @@
 | `doctor.sh` | `./scripts/doctor.sh` | 检查构建工具及GCC目标，列出可选工具；不探测硬件 |
 | `build.sh` | `./scripts/build.sh [Debug\|Release] [jobs]` | 配置、编译、链接，导出ELF/BIN/HEX和大小报告 |
 | `clean.sh` | `./scripts/clean.sh [Debug\|Release]` | 调用CMake clean并删除本脚本导出的报告/镜像，保留配置与日志 |
+| `test-link.sh` | `./scripts/test-link.sh` | 主机 C/Python 协议测试：黄金帧、CRC、长度边界、噪声、超时及回绕，不连接硬件 |
 | `test-attitude.sh` | `./scripts/test-attitude.sh` | 主机运行静态标定/四元数姿态合成运动与异常测试，不连接硬件 |
 | `test-imu.sh` | `./scripts/test-imu.sh` | 主机编译并运行 IMU 状态机模拟总线测试，启用未定义行为检查，不连接硬件 |
 | `check.sh` | `./scripts/check.sh` | Bash语法检查及固件静态断言，不编译 |

@@ -2,7 +2,7 @@
 
 NavBot C30D 小脑固件模板，STM32F407VET6 + HAL + FreeRTOS + C11。
 
-截至2026-10-21，已通过 CMSIS-DAP 在实板完成 Debug 编译、烧录校验、ICM20948 六轴与温度采集、静态陀螺仪零偏标定、六轴姿态解算、OLED 显示及故障恢复测试。电机闭环、通信协议和看门狗尚未实现，电机输出保持禁用。
+截至2026-10-21，已通过 CMSIS-DAP 在实板完成 Debug 编译、烧录校验、ICM20948 六轴与温度采集、静态陀螺仪零偏标定、六轴姿态解算、OLED 显示及故障恢复测试。已实现 USART3 无电机台架通信（握手、时间查询、IMU/姿态/轮状态/诊断上报）；电机闭环和看门狗尚未实现，电机输出保持禁用。协议与实测入口见 [台架通信](docs/chassis-link.md)。
 
 ## 工程结构
 
@@ -57,7 +57,7 @@ navbot_body/
 | 编码器A/B | PA15、PB3 / TIM2；PB4、PB5 / TIM3 |
 | 编码器C/D | PB6、PB7 / TIM4；PA0、PA1 / TIM5 |
 | 编码器模式 | TI12，TIM2/5为32位，TIM3/4为16位，过滤15，未启动 |
-| Jetson通信预留 | PD8/PD9 USART3，460800/8N1，RX DMA1_Stream1循环、TX DMA1_Stream3普通，均Channel4 |
+| 上位机通信 | PD8/PD9 USART3，460800/8N1，RX DMA1_Stream1循环、TX DMA1_Stream3普通，均Channel4 |
 | 调试串口 | PA9/PA10 USART1，115200/8N1 |
 | 电池采样预留 | PB0 ADC1_IN8，21MHz/12bit/480周期，仅初始化 |
 | 开关/按键/LED | PD3/PE0/PE8；未判断输入有效电平 |
@@ -84,7 +84,7 @@ C/D方向不能按通道顺序推断。A/B/C/D到实际车轮的映射、编码�
 
 UART/DMA中断逻辑优先级5，HAL TIM6与RTOS tick为15，NVIC分组4。数值小于5的ISR不得调用FreeRTOS API；TIM6不调用RTOS。SVC/PendSV归内核，SysTick归CMSIS包装器，TIM6归HAL。
 
-后续使用值拷贝固定容量队列传递命令/快照：通信任务完成验证后交给控制任务，控制任务独占PI和运动状态；DMA缓冲在完成前归驱动，ISR只做有界通知；64位快照需同步。通信队列、协议、运动状态机、闭环和看门狗尚未实现；IMU 已具有初始化/采集/恢复状态机、毫秒采样时间戳和基于 DWT 的微秒间隔诊断。
+后续使用值拷贝固定容量队列传递命令/快照：未来通信任务完成运动命令验证后交给控制任务，控制任务独占PI和运动状态；DMA缓冲在完成前归驱动，ISR只做有界通知；64位快照需同步。USART3 通信由 commTask 独占，使用固定容量队列和 DMA；运动状态机、闭环和看门狗尚未实现；IMU 已具有初始化/采集/恢复状态机、毫秒采样时间戳和基于 DWT 的微秒间隔诊断。
 
 ## VS Code与OpenOCD
 

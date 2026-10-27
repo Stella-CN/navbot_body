@@ -1,4 +1,5 @@
 #include "app_tasks.h"
+#include "chassis_link.h"
 #include "cmsis_os2.h"
 #include "c30d_safety.h"
 #include "imu_diagnostics.h"
@@ -40,11 +41,11 @@ void Navbot_CommTask(void *argument)
     {
         C30D_TemplatePanic();
     }
-    /* Future sole owner of USART3 RX parsing and TX buffers.
-     * DMA is configured only; no reception, transmission or command acceptance. */
+    Navbot_LinkInit();
+    deadline = osKernelGetTickCount();
     for (;;)
     {
-
+        Navbot_LinkPoll(osKernelGetTickCount());
         deadline += period;
         if (osDelayUntil(deadline) != osOK)
         {

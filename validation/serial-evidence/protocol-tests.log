@@ -1,0 +1,6 @@
+PASS: CRC/golden vector, all payload lengths, fragmentation/coalescing, CRC/length/version, timeout/tick wrap, 100k noise bytes
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
