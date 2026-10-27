@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "flood_stop_ack": {
+    "request_seq": 1,
+    "request_id": 18,
+    "result": 0
+  },
+  "invalid_imu": {
+    "valid": 0,
+    "gyro": [
+      -0.010924961417913437,
+      0.0026646247133612633,
+      -0.004796324763447046
+    ],
+    "accel": [
+      -0.2346317619085312,
+      -1.1563993692398071,
+      9.907206535339355
+    ]
+  },
+  "invalid_attitude": {
+    "valid": 0,
+    "q_xyzw": [
+      -0.05784669518470764,
+      0.010922788642346859,
+      0.005622160620987415,
+      0.9982499480247498
+    ]
+  },
+  "recovered_imu": {
+    "valid": 1,
+    "gyro": [
+      -0.013323123566806316,
+      0.004263399634510279,
+      -0.007061255630105734
+    ],
+    "accel": [
+      -0.24480712413787842,
+      -1.1450269222259521,
+      9.930550575256348
+    ]
+  },
+  "recovered_attitude": {
+    "valid": 1,
+    "q_xyzw": [
+      -0.0579361692070961,
+      0.011355654336512089,
+      0.0006509137456305325,
+      0.9982555508613586
+    ]
+  },
+  "recovered_status": {
+    "motion_enabled": 0,
+    "wheel_valid": 0,
+    "imu_health": 1,
+    "imu_error": 2,
+    "imu_sequence": 14438,
+    "imu_timestamp_ms": 145950,
+    "calibration_state": 2,
+    "heading_epoch": 2,
+    "crc_errors": 1,
+    "length_errors": 1281,
+    "version_errors": 1,
+    "parse_timeouts": 1,
+    "rx_overflows": 0,
+    "uart_errors": 0,
+    "tx_drops": 0,
+    "response_drops": 0,
+    "rejected": 2,
+    "accepted": 49,
+    "imu_recoveries": 1,
+    "tx_errors": 0
+  },
+  "old_session_after_reset_silent": true,
+  "boot_before": 1641971082766271449,
+  "boot_after": 10093331940000563681,
+  "reset_stop_ack": {
+    "request_seq": 4,
+    "request_id": 18,
+    "result": 0
+  },
+  "motor_and_fault_registers_zero": true
+}

@@ -1,0 +1,57 @@
+C30D USART3 无电机台架通信验证
+日期：2026-10-21，Asia/Shanghai
+
+最终结果：PASS。Debug 已经 DAPLink 烧录、Flash 校验；最终测量前复位 MCU 并退出 OpenOCD。
+主板保持运行。没有连接电机，没有执行运动使能。
+串口 /dev/cu.usbserial-5A6D0016211；VID:PID=1A86:55D4，SER=5A6D001621。
+配置 460800/8N1，无流控。DAPLink Horco FAED:4870，SWD 1MHz。
+
+最终30秒独立测量（包含主机读取边界，频率按实际墙钟窗口计算）：
+- WHEEL_STATE：3001帧，99.974Hz；全程 valid=0，计数/轮速为无效占位。
+- IMU_RAW：3000帧/3000独立样本，99.941Hz；有效，数值有限。
+- ATTITUDE：1500帧，49.971Hz；有效，四元数归一化。
+- STATUS：300帧，9.994Hz；motion_enabled=0、wheel_valid=0。
+- TIME_SYNC：30次响应，用户态往返15.533～21.570ms；非同步精度验收。
+- 上行解析错误0，序号缺失0，启动重同步错误0。
+- UART错误、RX环溢出、TX丢弃、应答队列丢弃、TX错误均0。
+- 关闭/重开串口后新会话HELLO成功，boot_id不变。
+
+真实下行验证：
+- HELLO/CAPS、TIME_SYNC、STOP/ACK、台架拒绝速度/使能/清故障/写配置。
+- CRC错、超长、错误版本、截断超时均计数且恢复；旧序号/错误会话拒绝。
+- 拆包三个片段、粘包两帧逐一核验ACK；256字节含嵌入SOF的合法payload可恢复应答。
+- 新会话与u32序号跨FFFFFFFF回绕成功。
+- 7680字节噪声洪泛（1280个超长头）后STOP仍正常应答，无RX溢出。
+
+Debug故障及重启验证：
+- 通过GDB写c30d_imu_test_fault=1模拟NACK，串口IMU和姿态valid均转0。
+- 清除故障后IMU恢复；重新静态标定后姿态恢复，heading_epoch=2、imu_recoveries=1。
+- MCU复位后不再响应旧会话普通命令；重新HELLO后boot_id改变，STOP可确认。
+- 复位后重新标定通过；故障注入最终清零。
+- GDB断言4组CCER、8路CCR、TIM1 MOE、CFSR/HFSR均0。
+- 最小已观察任务剩余栈字数：control471、comm325、sensor293、monitor281（每字4字节）。
+- IMU deadline_misses=0；这些观察不是完整WCET或全栈空间证明。
+
+构建/主机检查：
+- Debug：Flash58424字节；普通SRAM35256字节；CCM未用。
+- Release：Flash36792字节；普通SRAM35248字节；仅编译，未烧录Release。
+- 47/47静态检查，格式检查，已有IMU/姿态测试通过。
+- C协议测试：CRC标准值/黄金帧、payload0～256/超限、拆粘包、错误重同步、超时/tick回绕、10万噪声字节；UBSan通过。
+- Python4项协议测试通过，含延迟读出完整帧的回归测试。
+- 本机Apple AddressSanitizer运行库初始化死锁，终止该测试并采用UBSan；不声称ASan通过。
+
+调试与测试工具修正记录：
+- 主机解析器曾把延迟读取后的完整候选帧先按空闲超时丢弃；改为完整帧优先校验，新增回归测试。
+- 中间测量受GDB/Flash校验干预，频率降至约84Hz且之后握手超时；该窗口未通过，不计入最终结果。
+- 复位并退出OpenOCD后重新完整运行，最终窗口无上述问题。GDB校验/暂停不能与连续频率测量混用。
+
+证据：validation/serial-evidence/ 保存最终报告、故障报告、安全寄存器、烧录/镜像校验、测试日志及SHA256。
+全量最终帧记录：build/Debug/serial-validation-accepted/frames.jsonl（构建目录忽略）。
+中间失败诊断：build/Debug/serial-validation-final/；不与最终通过记录混合。
+
+边界：
+- 未连接电机；未验证实际编码器、轮速、速度闭环、运动停车及电气输出波形。
+- IMU为芯片轴，姿态为六轴相对航向；没有安装外参、绝对航向或ROS融合精度保证。
+- 时间单位us、分辨率1ms，表示读事务时间；不是传感器内部转换时间。
+- 已验证电脑侧串口关闭/重开和MCU复位；未做物理USB拔插、真实总线短路或UART线路错误电气注入。
+- 尚未执行Jetson/树莓派/ROS节点部署；协议和Python工具可作为后续对接依据。

@@ -30,6 +30,8 @@ target_include_directories(stm32cubemx INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/BSP/C30D"
 )
 target_sources(${PROJECT_NAME} PRIVATE
+    Applications/link_protocol.c
+    Applications/chassis_link.c
     Applications/attitude.c
     Applications/app_tasks.c
     Applications/imu_diagnostics.c

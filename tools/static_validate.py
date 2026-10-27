@@ -62,9 +62,13 @@ def main():
                                  ('TIM4', '65535'), ('TIM5', '4294967295')]),
             'quadrature encoder counters use native 32/16/16/32-bit ranges')
     app = '\n'.join(p.read_text() for directory in ('Core', 'Applications', 'BSP') for p in (ROOT / directory).rglob('*.c'))
-    require(not re.search(r'HAL_TIM_(?:PWM|Encoder)_Start\s*\(', app)
-            and not re.search(r'HAL_UART(?:Ex)?_(?:Receive|Transmit)\w*\s*\(', app),
-            'template never starts motors, encoders, or UART transfers')
+    require(not re.search(r'HAL_TIM_(?:PWM|Encoder)_Start\s*\(', app),
+            'bench firmware never starts motors or unconfigured encoders')
+    link = read('Applications/chassis_link.c')
+    require('HAL_UARTEx_ReceiveToIdle_DMA(&huart3' in link
+            and 'HAL_UART_Transmit_DMA(&huart3' in link
+            and 'ack(f, 4)' in link,
+            'USART3 DMA link enabled with bench motion rejection')
     irq = read('Core/Src/stm32f4xx_it.c')
     timebase = read('Core/Src/stm32f4xx_hal_timebase_tim.c')
     wrapper = read('Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c')

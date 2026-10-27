@@ -1,0 +1,89 @@
+{
+  "port": "/dev/cu.usbserial-5A6D0016211",
+  "baud": 460800,
+  "duration_s": 30.0,
+  "passed": true,
+  "hello": {
+    "request_seq": 0,
+    "boot_id": 2278404127497867629,
+    "firmware": 65536,
+    "caps": 15,
+    "clock_resolution_us": 1000,
+    "imu_hz": 100,
+    "attitude_hz": 50,
+    "wheel_hz": 100,
+    "status_hz": 10,
+    "imu_id": 234,
+    "motor_present_mask": 0,
+    "axes": 1,
+    "sample_time_kind": 1
+  },
+  "startup_resync_errors": 0,
+  "rates_hz": {
+    "0x20": 99.97445102101229,
+    "0x21": 99.9411373085761,
+    "0x22": 49.97056865428805,
+    "0x23": 9.99411373085761
+  },
+  "counts": {
+    "2": 30,
+    "32": 3001,
+    "33": 3000,
+    "34": 1500,
+    "35": 300
+  },
+  "unique_samples": {
+    "32": 3001,
+    "33": 3000,
+    "34": 1500
+  },
+  "host_parse_errors": 0,
+  "sequence_gaps": 0,
+  "status": {
+    "motion_enabled": 0,
+    "wheel_valid": 0,
+    "imu_health": 1,
+    "imu_error": 0,
+    "imu_sequence": 3692,
+    "imu_timestamp_ms": 37200,
+    "calibration_state": 2,
+    "heading_epoch": 1,
+    "crc_errors": 1,
+    "length_errors": 1,
+    "version_errors": 1,
+    "parse_timeouts": 1,
+    "rx_overflows": 0,
+    "uart_errors": 0,
+    "tx_drops": 0,
+    "response_drops": 0,
+    "rejected": 2,
+    "accepted": 47,
+    "imu_recoveries": 0,
+    "tx_errors": 0
+  },
+  "imu": {
+    "valid": 1,
+    "gyro": [
+      -0.013989279977977276,
+      0.003064318560063839,
+      -0.006661561783403158
+    ],
+    "accel": [
+      -0.2388216257095337,
+      -1.1581950187683105,
+      9.945513725280762
+    ]
+  },
+  "attitude": {
+    "valid": 1,
+    "q_xyzw": [
+      -0.05781739205121994,
+      0.011306559666991234,
+      0.0016044910298660398,
+      0.9982618093490601
+    ]
+  },
+  "rtt_us_min": 15533,
+  "rtt_us_max": 21570,
+  "close_reopen_passed": true
+}
