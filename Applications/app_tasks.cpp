@@ -7,26 +7,39 @@
 #include "c30d_oled.h"
 #include "FreeRTOS.h"
 #include "task.h"
-extern osThreadId_t controlTaskHandle, commTaskHandle, sensorTaskHandle, monitorTaskHandle;
+#include "wheel_motors.hpp"
+extern "C"
+{
+    extern osThreadId_t controlTaskHandle, commTaskHandle, sensorTaskHandle, monitorTaskHandle;
+}
 
 void Navbot_ControlTask(void *argument)
 {
     (void)argument;
     const uint32_t period = osKernelGetTickFreq() / 100U;
     uint32_t deadline = osKernelGetTickCount();
-    if ((period == 0U) || ((osKernelGetTickFreq() % 100U) != 0U))
+    if (osKernelGetTickFreq() != 1000U)
     {
         C30D_TemplatePanic();
     }
-    /* Sole future owner of encoder deltas, wheel mapping, PI and motion state.
-     * Remains DISABLED: no calibrated parameters or frozen protocol yet. */
+    auto &wheels = navbot::WheelMotors::instance();
+    if (!wheels.initialize(osKernelGetTickCount()))
+    {
+        C30D_TemplatePanic();
+    }
+    /* Sole motor owner. Feedback only; no caller enables outputs yet. External
+     * controllers must run here or deliver validated commands to this task. */
+    deadline = osKernelGetTickCount();
     for (;;)
     {
-        C30D_ForceMotorIdle();
         deadline += period;
         if (osDelayUntil(deadline) != osOK)
         {
             /* Missed deadline: latch the template rather than spin/catch up. */
+            C30D_TemplatePanic();
+        }
+        if (!wheels.updateFeedback(osKernelGetTickCount()))
+        {
             C30D_TemplatePanic();
         }
     }
