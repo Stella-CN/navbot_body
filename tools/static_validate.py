@@ -98,8 +98,8 @@ def main():
             'all four application tasks own static TCBs and stacks')
     require(all(f'osKernelGetTickFreq() / {hz}U' in function(application, 'Navbot_' + role + 'Task')
                 and 'osDelayUntil(deadline)' in function(application, 'Navbot_' + role + 'Task')
-                for role, hz in [('Control', 100), ('Comm', 200), ('Sensor', 100), ('Monitor', 10)]),
-            'absolute task periods: control100 / comm200 / sensor100 / monitor10 Hz')
+                for role, hz in [('Control', 500), ('Comm', 200), ('Sensor', 100), ('Monitor', 10)]),
+            'absolute task periods: control500 / comm200 / sensor100 / monitor10 Hz')
     require(bool(re.search(r'configCHECK_FOR_STACK_OVERFLOW\s+2', cfg))
             and bool(re.search(r'configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY\s+5', cfg))
             and all('C30D_TemplatePanic();' in function(rtos, f) for f in

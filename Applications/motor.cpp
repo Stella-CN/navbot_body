@@ -141,7 +141,7 @@ namespace navbot
         feedback_.delta_counts = 0;
         feedback_.counts_per_second = 0.0f;
         feedback_.rpm = 0.0f;
-        /* 100 Hz caller, <=20ms gaps. At the specified 1100 +/-132 rpm and
+        /* 500 Hz caller, <=20ms gaps. At the specified 1100 +/-132 rpm and
          * 20000 counts/rev, 16-bit delta cannot cross the half-range in 20ms.
          * Exact half-range is ambiguous; gaps must not silently fabricate speed. */
         if (elapsed == 0U || elapsed > 20U)

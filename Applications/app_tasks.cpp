@@ -8,6 +8,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "wheel_motors.hpp"
+#include "motion_service.hpp"
 extern "C"
 {
     extern osThreadId_t controlTaskHandle, commTaskHandle, sensorTaskHandle, monitorTaskHandle;
@@ -16,7 +17,7 @@ extern "C"
 void Navbot_ControlTask(void *argument)
 {
     (void)argument;
-    const uint32_t period = osKernelGetTickFreq() / 100U;
+    const uint32_t period = osKernelGetTickFreq() / 500U;
     uint32_t deadline = osKernelGetTickCount();
     if (osKernelGetTickFreq() != 1000U)
     {
@@ -27,8 +28,8 @@ void Navbot_ControlTask(void *argument)
     {
         C30D_TemplatePanic();
     }
-    /* Sole motor owner. Feedback only; no caller enables outputs yet. External
-     * controllers must run here or deliver validated commands to this task. */
+    Navbot_MotionInit();
+    /* Sole motor owner; communication supplies a bounded mailbox. */
     deadline = osKernelGetTickCount();
     for (;;)
     {
@@ -42,6 +43,7 @@ void Navbot_ControlTask(void *argument)
         {
             C30D_TemplatePanic();
         }
+        Navbot_MotionPoll(osKernelGetTickCount());
     }
 }
 

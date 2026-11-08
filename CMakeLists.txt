@@ -33,6 +33,8 @@ target_include_directories(stm32cubemx INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/BSP/C30D"
 )
 target_sources(${PROJECT_NAME} PRIVATE
+    Applications/motion.cpp
+    Applications/motion_service.cpp
     Applications/motor.cpp
     Applications/wheel_motors.cpp
     Applications/link_protocol.cpp

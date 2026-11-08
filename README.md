@@ -2,9 +2,9 @@
 
 NavBot C30D 小脑固件模板，STM32F407VET6 + HAL + FreeRTOS，应用层 C++17，BSP/生成代码 C11。
 
-截至2026-10-21，已通过 CMSIS-DAP 在实板完成 Debug 编译、烧录校验、ICM20948 六轴与温度采集、静态陀螺仪零偏标定、六轴姿态解算、OLED 显示及故障恢复测试。已实现 USART3 无电机台架通信（握手、时间查询、IMU/姿态/轮状态/诊断上报）；电机闭环和看门狗尚未实现，电机输出保持禁用。协议与实测入口见 [台架通信](docs/chassis-link.md)。
+当前版本 1.1（2026-11-07）：USART3 双向通信、真实四轮编码器遥测、独立轮速 PI、车体差速速度接口、命令超时停机和控制任务 IWDG。默认上电禁用，显式使能后仍需持续发送新速度指令；默认 PWM 限制为20%。
 
-截至2026-11-07，新增 [电机基础模块](docs/motor-control.md)：抽象 `Motor` 与四轮派生类、慢衰减PWM、滑行/制动、编码器计数与转速。默认输出关闭；PID、运动学与看门狗不在此模块范围。本次实现仅做软件测试和交叉编译，未烧录新模块。
+使用说明与报文布局见 [通信与速度控制](docs/motion-control.md)，基础电机接口见 [Motor 模块](docs/motor-control.md)。历史无电机台架协议见 [v1.0](docs/chassis-link.md)，其中“禁止运动/轮状态占位”仅适用于旧固件。
 
 ## 工程结构
 
@@ -75,7 +75,7 @@ C/D方向不能按通道顺序推断。A/B/C/D到实际车轮的映射、编码�
 
 | 任务 | CMSIS优先级 | 周期 | 静态栈 | 后续唯一所有权 |
 | --- | --- | --- | --- | --- |
-| controlTask | High / 40 | 10ms | 2048B | 编码器模差分、四轮基础对象；后续PI/运动状态/PWM |
+| controlTask | High / 40 | 2ms | 2048B | 编码器模差分、四轮 PI/运动状态/PWM |
 | commTask | Normal / 24 | 5ms | 2048B | 串口收发缓冲、校验/会话、固定容量消息 |
 | sensorTask | BelowNormal / 16 | 10ms | 1536B | 有界IMU/ADC采集、样本时间与有效性 |
 | monitorTask | Low / 8 | 100ms | 2048B | 新鲜度、栈水位、诊断及看门狗策略 |
@@ -84,7 +84,7 @@ C/D方向不能按通道顺序推断。A/B/C/D到实际车轮的映射、编码�
 
 任务采用绝对周期等待，tick回绕由CMSIS包装器处理；控制、通信和监控任务截止时间过期（包含正好等于当前tick）返回错误并锁定。采集任务则计数、使样本无效并重新同步周期，避免故障重试导致全局锁定。IMU 任务统计轮询/成功样本间隔与执行耗时；monitorTask 记录四任务栈水位。实测范围不等于完整 WCET 或硬实时保证。
 
-内核初始化后检查 `osKernelReady`，任务创建检查空句柄，调度器启动若返回即锁定。故障处理不使用HAL句柄、RTOS或阻塞I/O，先关闭IRQ，再按外设时钟状态清零CCR、关闭CCER/MOE。基础电机模块提供显式使能API，但默认控制任务仅采集编码器，不调用使能/驱动；软件输出禁止不等于已验证的驱动电平、停车能力或硬件断能。
+内核初始化后检查 `osKernelReady`，任务创建检查空句柄，调度器启动若返回即锁定。故障处理不使用HAL句柄、RTOS或阻塞I/O，先关闭IRQ，再按外设时钟状态清零CCR、关闭CCER/MOE。控制任务独占电机与PI状态，通过通信邮箱接收显式使能/速度请求；软件输出禁止不等于已验证的驱动电平、停车能力或硬件断能。
 
 UART/DMA中断逻辑优先级5，HAL TIM6与RTOS tick为15，NVIC分组4。数值小于5的ISR不得调用FreeRTOS API；TIM6不调用RTOS。SVC/PendSV归内核，SysTick归CMSIS包装器，TIM6归HAL。
 
@@ -149,7 +149,7 @@ macOS默认使用本机CubeMX内置JRE；其他安装位置可用 `--cubemx-dir`
 ./scripts/build.sh Debug 4
 ```
 
-实板测试需要单独明确启动，先烧录 Debug 固件并运行 `openocd -f openocd.cfg`，再在另一终端执行 `python3 tools/hardware_validate_imu.py`。脚本会暂停/恢复目标，要求电机保持断开；测试实际地址 NACK（改访无设备的 0x69）、模拟 SCL 等待超时、屏蔽 data-ready 后的过期及自动恢复，并执行 30 秒采样计数测试。模拟超时不等于已验证物理短路；没有覆盖实际断线、上电波形或所有电气故障。故障开关 `c30d_imu_test_fault` 仅 Debug 存在，默认零，脚本在 finally 中清零；Release 不含该符号与分支。
+运动版启用 IWDG，长时间暂停目标会触发复位；历史 GDB 注入脚本不能直接当作运动版验收工具。实板测试需要单独明确启动，先烧录 Debug 固件并运行 `openocd -f openocd.cfg`，再在另一终端执行 `python3 tools/hardware_validate_imu.py`。脚本会暂停/恢复目标，要求电机保持断开；测试实际地址 NACK（改访无设备的 0x69）、模拟 SCL 等待超时、屏蔽 data-ready 后的过期及自动恢复，并执行 30 秒采样计数测试。模拟超时不等于已验证物理短路；没有覆盖实际断线、上电波形或所有电气故障。故障开关 `c30d_imu_test_fault` 仅 Debug 存在，默认零，脚本在 finally 中清零；Release 不含该符号与分支。
 
 主机测试使用真实驱动和模拟寄存器总线，覆盖初始化读回、带符号转换、单位换算、NACK 退避/恢复、过期、错误身份/配置、长期运行与 tick 回绕；不验证实际总线边沿。采样、异常和电机寄存器证据位于 `build/Debug/imu-validation/`；持久测试结论见 `validation/imu-oled-bench.txt`。原始厂家 Flash 备份在 `build/Debug/hardware-validation/original-flash.bin`。
 

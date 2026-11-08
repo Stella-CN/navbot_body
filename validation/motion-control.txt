@@ -1,0 +1,47 @@
+NavBot motion communication validation — 2026-11-07
+
+Firmware 1.1.0 retained on C30D; Debug ELF SHA256: 47fc0596fa5e68fd5075c5f88b05281d319607240871081786e4c3eda78f08fe
+Host: stella@192.168.5.17; deployed tools: /home/stella/navbot-motion/tools/
+Serial: /dev/serial/by-id/usb-1a86_USB_Single_Serial_5A6D001621-if00, 460800 8N1.
+Physical forward signs confirmed by user: LF(C)+, LR(D)-, RF(B)-, RR(A)+.
+Nominal CAD radius .0425m, track .228m; 20000 counts/rev provisional. No loaded/ground calibration.
+
+Round 1: final-firmware independent wheel 6rad/s, 1.5s, 20% PWM ceiling:
+  C: passed=True, window mean=5.70262rad/s, peak=6.25177, max duty=101permille; final speed0, parser/gaps0.
+  D: passed=True, window mean=5.63350rad/s, peak=6.18894, max duty=110permille; final speed0, parser/gaps0.
+  B: passed=True, window mean=5.89991rad/s, peak=6.15752, max duty=78permille; final speed0, parser/gaps0.
+  A: passed=True, window mean=5.83457rad/s, peak=6.25177, max duty=99permille; final speed0, parser/gaps0.
+
+Round 2: actual Jetson Python VelocityBridge simulates ROS callbacks (ROS not installed).
+  body-forward: passed=True, target={'vx': 0.15, 'wz': 0.0}, measured={'vx': 0.15050781841043917, 'wz': 0.10829489671608859}, parser/gaps=0/0.
+  body-reverse: passed=True, target={'vx': -0.15, 'wz': 0.0}, measured={'vx': -0.15172060345330587, 'wz': -0.01317608663376573}, parser/gaps=0/0.
+  body-turn: passed=False, target={'vx': 0.0, 'wz': 0.6}, measured={'vx': -0.00480107375397347, 'wz': 0.3681008573546624}, parser/gaps=0/0.
+  body-turn-1p2: passed=True, target={'vx': 0.0, 'wz': 1.2}, measured={'vx': -0.0001835867658373896, 'wz': 1.1988288042534139}, parser/gaps=0/0.
+
+The 0.6rad/s turn failed initial ±0.2rad/s tolerance: low-PWM delayed start. Preserved failure; no relaxed threshold. PI/dead-zone/feedforward need further tuning before precise low-speed ground use.
+All test endings: wheels settled and PWM disabled. C initial/final, reverse and turns verified no-command lease expiry. STOP/application result verified; timeout requires STOP then explicit enable.
+Final protocol checks passed: disabled rejects movement, NaN, excessive velocity/TTL, invalid signs, config while enabled, duplicate seq, lease expiry, no auto-rearm, new-session revoke.
+Software: UBSan motion/model tests; real motion-service STOP regression forbids even transient PWM reassertion; mailbox priority/latest-wins/timeout; 4 host bridge tests; existing motor, link (4 Python), attitude, IMU tests passed. 47/47 static checks, clang-format, Debug/Release builds passed.
+Final Debug flash73948B/RAM36160B; Release flash42516B/RAM36128B.
+Final SWD evidence: CCR/CCER allzero, TIM1 MOE clear; CPU running; max service cycle 85.030us; stack high-water free words [263, 249, 297, 263].
+IWDG configured and fed only from control task, nominal~500ms; forced controller-hang/watchdog-reset test not performed.
+Raw frames and failed result retained in build/motion-validation and Jetson /home/stella/navbot-motion/results. Hash manifest follows:
+
+body-forward.json 52249e7c2972c80a6ccc50d3c6e2ce83b9d72d82839348ba1eb0292abb2542db passed=True
+body-reverse.json f3d8cedacb35f43ce8d50c5f3130f3d7748ffc7985618d69ad95b33ae6c14b74 passed=True
+body-turn-1p2.json 0e31322138ef90e0cfeff584de1b940b7bd7900e390e09fa60f470ae92c8103a passed=True
+body-turn.json 6b5661a380a6350a670e9e5e1ade181acab07a89c2805da4b810916314bd462e passed=False
+direction-a.json 6bf2ad97e1986d8d1a05798a8f517eda522725f0ddfc9d2f73acc0f1c8093902 passed=True
+direction-b.json 1c7a173693335b01402608f4d63060008133c1d2b77f54c5737e74f7711f3155 passed=True
+direction-c.json 327b6287634d540fcb9522cb527c12589d735e9c5c8f9324a76a7102999d2208 passed=True
+direction-d.json 31a16565bcc0c56486fe10f1edcbfa34074b3c2f05f51a845d66feff213c51d2 passed=True
+navbot-protocol-test.json 1ab56ba3d4083d710d7305cee3a313627f8a2eff5d44723d0ede6db18f023852 passed=True
+navbot-wheel-0.json 05724d0894d58940834d4fdb80b7ad436fc45aee702ae9ca27e8ded811b7c5d6 passed=True
+navbot-wheel-1.json dc624ba148488ccce83e9dbcd25fcbbc0bb63a414a6ca5dd87025f939d079a8a passed=True
+navbot-wheel-2.json 762bd4cdebaa16abf10d8286409a5a5fb6ee62938d3a32b48b90328c23595c34 passed=True
+navbot-wheel-3.json 5726f905f7a1c60b095d610d58dfcf887dcfdd5c31cb434490703cd9ecc77dc4 passed=True
+protocol-final.json 1340c1ad01cf854d7b5f9fc17921de39b6e752d288dd5b792e2180432881d7fb passed=True
+wheel-final-0.json 5398949189034ab812136d378a4c386de4bd9f36c509167069303ec104979f8b passed=True
+wheel-final-1.json 33353a92537963958866b6760678e9191f295708ce2caf714a83fdfd1837592c passed=True
+wheel-final-2.json c81fe69991b81d6d126bb77fa400e8b414fabd1ec7cdc0fec10c3c40bf6b9ed2 passed=True
+wheel-final-3.json 4aa6053592744e163c4a4062d28174ddafb7688d56a0384c79b66d492e5abec8 passed=True
