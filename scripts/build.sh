@@ -10,7 +10,7 @@ fi
 select_preset "${1:-Debug}"
 jobs="${2:-${CMAKE_BUILD_PARALLEL_LEVEL:-4}}"
 [[ "$jobs" =~ ^[1-9][0-9]*$ ]] || fail 'Job count must be a positive integer.'
-for tool in cmake ninja arm-none-eabi-gcc arm-none-eabi-objcopy arm-none-eabi-size; do
+for tool in cmake ninja arm-none-eabi-gcc arm-none-eabi-g++ arm-none-eabi-objcopy arm-none-eabi-size; do
     require_tool "$tool"
 done
 verify_cache_source

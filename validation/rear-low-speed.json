@@ -1,0 +1,542 @@
+{
+  "date": "2026-11-08",
+  "firmware": "1.1.2",
+  "elf_sha256": "9692c75a24aca44baecff60d472c46d9fe98aea050d2bef63778b737fabceca1",
+  "tests": [
+    {
+      "duration_s": 4.51,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 50.0,
+          "mean_rad_s": -1.6461607195296377,
+          "std_rad_s": 0.23132495482050558,
+          "count_interval_mean_rad_s": -1.6419491550032277,
+          "count_interval_std_rad_s": 0.20429195936945965,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 80.0,
+          "mean_rad_s": -1.6893470248764737,
+          "std_rad_s": 0.4315832743096213,
+          "count_interval_mean_rad_s": -1.684403109781468,
+          "count_interval_std_rad_s": 0.3981865573474382,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 60.0,
+          "mean_rad_s": 1.6304951035430169,
+          "std_rad_s": 0.25574124164307316,
+          "count_interval_mean_rad_s": 1.6324394691329016,
+          "count_interval_std_rad_s": 0.23411443437189766,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 110.0,
+          "mean_rad_s": 1.7016254869111465,
+          "std_rad_s": 0.42498041616150434,
+          "count_interval_mean_rad_s": 1.6989223623156262,
+          "count_interval_std_rad_s": 0.402640693070322,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": -8.547282865587261e-05,
+        "wz": 0.6217898089769333
+      },
+      "host_test_passed": true,
+      "name": "rear-baseline-left",
+      "peak_duty_permille": 128,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 4.515,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 55.0,
+          "mean_rad_s": 1.641926774760141,
+          "std_rad_s": 0.22273084149748978,
+          "count_interval_mean_rad_s": 1.642203878731897,
+          "count_interval_std_rad_s": 0.20911439143508867,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 115.0,
+          "mean_rad_s": 1.6431969429926088,
+          "std_rad_s": 0.4234553534488425,
+          "count_interval_mean_rad_s": 1.6465341821192776,
+          "count_interval_std_rad_s": 0.39332030898771675,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 35.0,
+          "mean_rad_s": -1.621180413868228,
+          "std_rad_s": 0.23393113367024254,
+          "count_interval_mean_rad_s": -1.6185994798751953,
+          "count_interval_std_rad_s": 0.20705627225838574,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 205.0,
+          "mean_rad_s": -1.6630965196540093,
+          "std_rad_s": 0.4828729405059226,
+          "count_interval_mean_rad_s": -1.6561287758991599,
+          "count_interval_std_rad_s": 0.4495917106625097,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.9845130443573
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": 8.997082449194384e-06,
+        "wz": -0.6122796659631293
+      },
+      "host_test_passed": true,
+      "name": "rear-baseline-right",
+      "peak_duty_permille": 197,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 4.505,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 44.0,
+          "mean_rad_s": -1.6592859710965837,
+          "std_rad_s": 0.22530434998643695,
+          "count_interval_mean_rad_s": -1.6560438679896035,
+          "count_interval_std_rad_s": 0.2060185753129067,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 84.0,
+          "mean_rad_s": -1.660556158929501,
+          "std_rad_s": 0.326701485937474,
+          "count_interval_mean_rad_s": -1.6645346589452514,
+          "count_interval_std_rad_s": 0.29384594887385357,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 34.0,
+          "mean_rad_s": 1.6402331985874639,
+          "std_rad_s": 0.25627271748806835,
+          "count_interval_mean_rad_s": 1.631250758399111,
+          "count_interval_std_rad_s": 0.23531007402834164,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.0420353412628174
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 104.0,
+          "mean_rad_s": 1.6618263496542878,
+          "std_rad_s": 0.3103686203740726,
+          "count_interval_mean_rad_s": 1.6585911052762978,
+          "count_interval_std_rad_s": 0.28106087917859934,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": -0.00018893993145854026,
+        "wz": 0.6171728537859277
+      },
+      "host_test_passed": true,
+      "name": "rear-final1-left",
+      "peak_duty_permille": 149,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 4.505,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 54.0,
+          "mean_rad_s": 1.6415033793513665,
+          "std_rad_s": 0.22331278832583595,
+          "count_interval_mean_rad_s": 1.6362603250629433,
+          "count_interval_std_rad_s": 0.20289240234198555,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 84.0,
+          "mean_rad_s": 1.641926774438822,
+          "std_rad_s": 0.30534811672737955,
+          "count_interval_mean_rad_s": 1.633882903595362,
+          "count_interval_std_rad_s": 0.2778661253184332,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 44.0,
+          "mean_rad_s": -1.6190634381096318,
+          "std_rad_s": 0.22673278907731048,
+          "count_interval_mean_rad_s": -1.6185145719656389,
+          "count_interval_std_rad_s": 0.20679871758760407,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 94.0,
+          "mean_rad_s": -1.646160720332935,
+          "std_rad_s": 0.36458239068486,
+          "count_interval_mean_rad_s": -1.6484870640390765,
+          "count_interval_std_rad_s": 0.33266031515205735,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": 0.00019343870056848312,
+        "wz": -0.6103460707673073
+      },
+      "host_test_passed": true,
+      "name": "rear-final1-right",
+      "peak_duty_permille": 167,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 4.51,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 60.0,
+          "mean_rad_s": -1.6491244844991884,
+          "std_rad_s": 0.2296153125732983,
+          "count_interval_mean_rad_s": -1.6517984725117794,
+          "count_interval_std_rad_s": 0.19997793786969437,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 80.0,
+          "mean_rad_s": -1.6741048091184096,
+          "std_rad_s": 0.3228793321203712,
+          "count_interval_mean_rad_s": -1.6672517120510588,
+          "count_interval_std_rad_s": 0.28836761203150046,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 30.0,
+          "mean_rad_s": 1.6351524523968965,
+          "std_rad_s": 0.25500066058146376,
+          "count_interval_mean_rad_s": 1.6327791007711276,
+          "count_interval_std_rad_s": 0.23701476817158573,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 70.0,
+          "mean_rad_s": 1.6635199393223559,
+          "std_rad_s": 0.30292086734748497,
+          "count_interval_mean_rad_s": 1.6636855798496866,
+          "count_interval_std_rad_s": 0.2781651540185176,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.356194496154785
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": -0.00026091708266992147,
+        "wz": 0.6171728544447723
+      },
+      "host_test_passed": true,
+      "name": "rear-final2-left",
+      "peak_duty_permille": 137,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 4.515,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 55.0,
+          "mean_rad_s": 1.6431969619504203,
+          "std_rad_s": 0.22247072355634848,
+          "count_interval_mean_rad_s": 1.64237369455101,
+          "count_interval_std_rad_s": 0.20024520170690224,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 85.0,
+          "mean_rad_s": 1.6359992403225758,
+          "std_rad_s": 0.31246912174705277,
+          "count_interval_mean_rad_s": 1.6374490357967342,
+          "count_interval_std_rad_s": 0.282165029393898,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 35.0,
+          "mean_rad_s": -1.623720788248787,
+          "std_rad_s": 0.2347901189208802,
+          "count_interval_mean_rad_s": -1.6200429143376556,
+          "count_interval_std_rad_s": 0.20784374071623052,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.1991147994995117
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 125.0,
+          "mean_rad_s": -1.6512414625070166,
+          "std_rad_s": 0.3557275936502075,
+          "count_interval_mean_rad_s": -1.6481474324008507,
+          "count_interval_std_rad_s": 0.3296628618093861,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 2.5132741928100586
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": 4.4985734870170206e-05,
+        "wz": -0.6108590663458859
+      },
+      "host_test_passed": true,
+      "name": "rear-final2-right",
+      "peak_duty_permille": 161,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 3.02,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 60.0,
+          "mean_rad_s": 3.6057559552493395,
+          "std_rad_s": 0.16248771999231304,
+          "count_interval_mean_rad_s": 3.598047586199604,
+          "count_interval_std_rad_s": 0.13209266759585342,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.084070682525635
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 70.0,
+          "mean_rad_s": 3.5272161713591568,
+          "std_rad_s": 0.3401567774343505,
+          "count_interval_mean_rad_s": 3.5244120660837894,
+          "count_interval_std_rad_s": 0.2668692857991801,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.084070682525635
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 40.0,
+          "mean_rad_s": 3.5590566085265563,
+          "std_rad_s": 0.19150870536168896,
+          "count_interval_mean_rad_s": 3.5589553699219034,
+          "count_interval_std_rad_s": 0.1515821784394542,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 3.9269909858703613
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 90.0,
+          "mean_rad_s": 3.5349993899061873,
+          "std_rad_s": 0.32994736126936486,
+          "count_interval_mean_rad_s": 3.526970829331057,
+          "count_interval_std_rad_s": 0.2678035625335267,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.084070682525635
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": 0.1511589421561131,
+        "wz": -0.003709708128059111
+      },
+      "host_test_passed": true,
+      "name": "rear-forward",
+      "peak_duty_permille": 173,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    },
+    {
+      "duration_s": 3.015,
+      "wheels": [
+        {
+          "wheel": "C/LF",
+          "sustained_start_ms": 50.0,
+          "mean_rad_s": -3.602218131761293,
+          "std_rad_s": 0.1825972674373021,
+          "count_interval_mean_rad_s": -3.5909399105127497,
+          "count_interval_std_rad_s": 0.1512230121433601,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.084070682525635
+        },
+        {
+          "wheel": "D/LR",
+          "sustained_start_ms": 80.0,
+          "mean_rad_s": -3.5618869076977977,
+          "std_rad_s": 0.3324897696004173,
+          "count_interval_mean_rad_s": -3.555543685592213,
+          "count_interval_std_rad_s": 0.2629134520722336,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.084070682525635
+        },
+        {
+          "wheel": "B/RF",
+          "sustained_start_ms": 50.0,
+          "mean_rad_s": -3.5944348981788568,
+          "std_rad_s": 0.17920846824160552,
+          "count_interval_mean_rad_s": -3.586817458614374,
+          "count_interval_std_rad_s": 0.14235096998434132,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 3.9269909858703613
+        },
+        {
+          "wheel": "A/RR",
+          "sustained_start_ms": 130.0,
+          "mean_rad_s": -3.522263212246938,
+          "std_rad_s": 0.3821852065526952,
+          "count_interval_mean_rad_s": -3.5235591450013666,
+          "count_interval_std_rad_s": 0.2982283146989602,
+          "longest_near_zero_ms": 0.0,
+          "peak_rad_s": 4.241150379180908
+        }
+      ],
+      "all_samples_valid": true,
+      "body_mean": {
+        "vx": -0.15171023140733061,
+        "wz": 0.0045708912787971534
+      },
+      "host_test_passed": true,
+      "name": "rear-backward",
+      "peak_duty_permille": 200,
+      "timeout_verified": true,
+      "parser_errors": 0,
+      "gaps": 0,
+      "final_state": 0,
+      "final_omega": [
+        0.0,
+        -0.0,
+        -0.0,
+        0.0
+      ]
+    }
+  ],
+  "hardware": {
+    "registers": {
+      "0x40010020": 0,
+      "0x40010034": 0,
+      "0x40010038": 0,
+      "0x4001003c": 0,
+      "0x40010040": 0,
+      "0x40014020": 0,
+      "0x40014034": 0,
+      "0x40014038": 0,
+      "0x40014420": 0,
+      "0x40014434": 0,
+      "0x40014820": 0,
+      "0x40014834": 0,
+      "0x40010044": 8192
+    },
+    "motion_max_us": 121.13690476190476,
+    "stack_free_words": [
+      235,
+      245,
+      281,
+      250
+    ],
+    "last_recoveries": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "protocol_passed": true
+}

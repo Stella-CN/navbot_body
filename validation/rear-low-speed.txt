@@ -1,0 +1,64 @@
+NavBot rear-wheel low-speed refinement — 2026-11-08
+Firmware 1.1.2; Debug ELF SHA256: 9692c75a24aca44baecff60d472c46d9fe98aea050d2bef63778b737fabceca1
+
+Scope: elevated chassis, unattended authorized. Commands <=4.5s (turns), 3s (straight); PWM <=20%.
+Command TTL200ms, startup deadline300ms, recovery budget3, STOP and IWDG unchanged.
+No microphone/visual observation: cannot certify disappearance of clicking sound.
+
+Changes: rear D/A Kp80 ->160; filter time constant2ms ->0.5ms.
+Rear static-friction feedforward D55 ->20, A50 ->15 permille; Ki60 and velocity FF9/8 unchanged.
+Front C/B gains unchanged. Breakaway/ramp/current output ceiling unchanged.
+Higher feedback response reduced measured physical speed ripple; lower feedforward reduced excess mean speed.
+Metric: speed reconstructed from signed cumulative encoder counts and actual telemetry intervals (~10ms), using provisional20000 counts/rev.
+This is independent of the controller speed filter; raw2ms speed metrics are also retained.
+Steady window: first accepted command +0.7s to last accepted command +20ms -100ms.
+
+Same-session baseline vs final count-derived std (rad/s):
+left D/LR: 0.3982 -> 0.2911, reduction 26.9%
+left A/RR: 0.4026 -> 0.2796, reduction 30.6%
+right D/LR: 0.3933 -> 0.2800, reduction 28.8%
+right A/RR: 0.4496 -> 0.3312, reduction 26.3%
+
+Final individual runs:
+rear-final1-left: PASS; body={'vx': -0.00018893993145854026, 'wz': 0.6171728537859277}; max PWM=14.9%
+  C,D,B,A start ms=[44.0, 84.0, 34.0, 104.0]
+  count-derived mean=[-1.656, -1.6645, 1.6313, 1.6586]
+  count-derived std=[0.206, 0.2938, 0.2353, 0.2811]
+rear-final1-right: PASS; body={'vx': 0.00019343870056848312, 'wz': -0.6103460707673073}; max PWM=16.7%
+  C,D,B,A start ms=[54.0, 84.0, 44.0, 94.0]
+  count-derived mean=[1.6363, 1.6339, -1.6185, -1.6485]
+  count-derived std=[0.2029, 0.2779, 0.2068, 0.3327]
+rear-final2-left: PASS; body={'vx': -0.00026091708266992147, 'wz': 0.6171728544447723}; max PWM=13.7%
+  C,D,B,A start ms=[60.0, 80.0, 30.0, 70.0]
+  count-derived mean=[-1.6518, -1.6673, 1.6328, 1.6637]
+  count-derived std=[0.2, 0.2884, 0.237, 0.2782]
+rear-final2-right: PASS; body={'vx': 4.4985734870170206e-05, 'wz': -0.6108590663458859}; max PWM=16.1%
+  C,D,B,A start ms=[55.0, 85.0, 35.0, 125.0]
+  count-derived mean=[1.6424, 1.6374, -1.62, -1.6481]
+  count-derived std=[0.2002, 0.2822, 0.2078, 0.3297]
+rear-forward: PASS; body={'vx': 0.1511589421561131, 'wz': -0.003709708128059111}; max PWM=17.3%
+  C,D,B,A start ms=[60.0, 70.0, 40.0, 90.0]
+  count-derived mean=[3.598, 3.5244, 3.559, 3.527]
+  count-derived std=[0.1321, 0.2669, 0.1516, 0.2678]
+rear-backward: PASS; body={'vx': -0.15171023140733061, 'wz': 0.0045708912787971534}; max PWM=20.0%
+  C,D,B,A start ms=[50.0, 80.0, 50.0, 130.0]
+  count-derived mean=[-3.5909, -3.5555, -3.5868, -3.5236]
+  count-derived std=[0.1512, 0.2629, 0.1424, 0.2982]
+
+Four final turns: no sampled steady near-zero interval (<.25rad/s), per-wheel mean error<10%.
+All six final motion tests: no serial parser errors/sequence gaps, valid encoder samples, timeout verified, final speeds/PWM zero.
+Zero-motion protocol boundary regression PASS.
+Motion C++ UBSan/unit/service tests PASS, host4 + metric2 Python cases PASS.
+Static47/47, format, Debug/Release builds PASS.
+Observed control service max=121.14us; stack free words=[235, 245, 281, 250].
+SWD: all motor compare/channel enables0, TIM1 MOE clear. Final firmware remains installed, disabled.
+
+Residual: rear std remains~0.28-0.33rad/s at target|omega|1.609rad/s; not perfectly smooth.
+No loaded/ground validation, audio confirmation, independent encoder calibration or current waveform measurement.
+Raw records retained locally build/rear-tuning/ and Jetson /home/stella/navbot-motion/results/.
+Reference for retained conditional integration: https://control.ros.org/jazzy/doc/control_toolbox/doc/index.html
+
+Post-test IMU audit (not a motor acceptance failure):
+rear-backward: raw IMU334/463 valid; attitude0/231 valid; last imu_error2, recoveries13, calibration_state0.
+Four final turn recordings also have no valid attitude frames. IMU reliability/calibration remains unresolved.
+Subsequent live stationary recheck unavailable: Jetson closed both SSH attempts.

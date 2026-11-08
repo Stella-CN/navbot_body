@@ -1,0 +1,37 @@
+2026-11-07 motor base / Applications C++17 migration
+
+Scope: software-only. No OpenOCD/probe/motor commands executed for this implementation.
+Branch: feature/motor-base, based on develop 3b27b12423b3bfa026ab7661fd4ec03f7f5c0f62.
+
+PASS scripts/test-motor.sh: actual C++ motor + actual C BSP with register mocks;
+     UBSan, warnings treated as errors. Lifecycle, limits, stop/brake, polarity,
+     counter/tick wrap, sample faults, hardware failure, four-wheel mapping,
+     independent object state, TIM1 isolation, interrupt-mask restoration,
+     stopping with missing encoder clock.
+PASS scripts/test-link.sh: C caller -> C++ protocol ABI, CRC/golden frame,
+     payload bounds, fragmentation, malformed frames, tick wrap, noise;
+     Python chassis serial tests 4/4.
+PASS scripts/test-attitude.sh: existing calibration/fusion regression suite.
+PASS scripts/test-imu.sh: existing C driver state-machine regression suite.
+PASS scripts/check.sh: 47/47 static checks and shell syntax checks.
+PASS scripts/format.sh --check.
+PASS git diff --check.
+PASS scripts/build.sh Debug 4: Flash 63304 B, RAM 35608 B, no warnings.
+PASS scripts/build.sh Release 4: Flash 39088 B, RAM 35600 B, no warnings.
+PASS ELF/compile_commands inspection, both configurations:
+     seven Applications units compiled as C++17;
+     strong unmangled C task entries and UART callbacks;
+     no operator new/delete, __cxa_throw, __cxa_guard or _GLOBAL__sub_I_ symbols.
+     Existing libc formatting/runtime heap symbols are not a new motor allocation API.
+
+NOT COMPLETED: AddressSanitizer. Apple Clang 17 / arm64 Darwin27 runtime hangs
+after libc interceptor initialization even for an independent puts-only main,
+both inside/outside sandbox. Hanging test processes were terminated.
+SANITIZERS=address,undefined remains selectable on compatible test hosts.
+
+NOT CLAIMED: on-board timing/waveform verification of this new BSP, braking force,
+load/current/thermal testing, physical forward-direction calibration or absolute
+encoder counts-per-wheel-revolution calibration. Prior temporary bench data are
+supporting polarity/PWM evidence, not validation of this implementation.
+
+Details, source references and calling contract: docs/motor-control.md.

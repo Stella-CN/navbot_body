@@ -9,7 +9,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-project(navbot_body LANGUAGES C ASM)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+project(navbot_body LANGUAGES C CXX ASM)
 
 if(NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
     message(FATAL_ERROR "navbot_body requires the Arm bare-metal toolchain")
@@ -30,20 +33,25 @@ target_include_directories(stm32cubemx INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/BSP/C30D"
 )
 target_sources(${PROJECT_NAME} PRIVATE
-    Applications/link_protocol.c
-    Applications/chassis_link.c
-    Applications/attitude.c
-    Applications/app_tasks.c
-    Applications/imu_diagnostics.c
+    Applications/motion.cpp
+    Applications/motion_service.cpp
+    Applications/motor.cpp
+    Applications/wheel_motors.cpp
+    Applications/link_protocol.cpp
+    Applications/chassis_link.cpp
+    Applications/attitude.cpp
+    Applications/app_tasks.cpp
+    Applications/imu_diagnostics.cpp
     BSP/C30D/c30d_soft_i2c.c
     BSP/C30D/c30d_imu.c
     BSP/C30D/c30d_oled.c
     BSP/C30D/c30d_safety.c
+    BSP/C30D/c30d_motor.c
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     "$<$<CONFIG:Debug>:C30D_IMU_TEST_HOOKS>"
 )
 target_compile_options(${PROJECT_NAME} PRIVATE
-    "$<$<COMPILE_LANGUAGE:C>:-Wall;-Wextra;-Wpedantic>"
+    "$<$<COMPILE_LANGUAGE:C,CXX>:-Wall;-Wextra;-Wpedantic>"
 )
 target_link_libraries(${PROJECT_NAME} stm32cubemx)

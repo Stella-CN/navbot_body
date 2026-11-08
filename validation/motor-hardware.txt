@@ -1,0 +1,40 @@
+2026-11-07 C30D motor API hardware validation
+
+User authorized elevated-wheel, low-duty short runs. Probe: 132765403554.
+Current uncommitted feature/motor-base module tested unchanged through its actual Motor APIs.
+Isolated test copy adds control-task-only command hook, max +/-200 permille, 1500ms duration,
+1000ms stop observation and ~500ms nominal independent watchdog. No test hook in final ELF.
+
+motor duty stop rpm steady_counts_per_second tail_abs_counts strict_zero_tail
+A -200 disable -146.664 -48888 0 True
+A 200 brake 158.619 52873 0 True
+A 200 coast 149.046 49682 0 True
+B -200 disable -173.982 -57994 0 True
+B 200 brake 179.868 59956 0 True
+B 200 coast 177.696 59232 5 False
+C -200 disable -159.405 -53135 0 True
+C 200 brake 160.458 53486 1 False
+C 200 coast 150.060 50020 0 True
+D -200 disable -143.151 -47717 0 True
+D 200 brake 148.233 49411 0 True
+D 200 coast 136.434 45478 0 True
+
+Every run issued its stop method at 1500ms; brake was held for 300ms then disabled.
+PWM compare registers and per-wheel state matched driving/coast/brake/disable modes.
+Raw counter differences matched Motor feedback (A/D polarity inverted); RPM matched calculation.
+No Motor error codes. Operator reported normal wheel location, reversal, stopping and sound.
+
+Unresolved observations:
+- B coast: 5 isolated -1 counts in final 500ms; one isolated count also recorded on A.
+- C brake: one -1 count after brake release in final 500ms.
+- Both strict zero-tail checks failed, aborted their batches and caused a diagnostic reset.
+  Records retained; remaining independent runs completed afterward. No relaxed zero-tail criterion.
+- A 10% startup trial produced only one count; effective tests used 20%.
+- RPM assumes 20000 counts/output revolution; no external calibration or vehicle-forward calibration.
+
+Final state: current new firmware flashed, Verified OK, CPU running, tick advancing.
+All CCR/CCER zero, TIM1 MOE clear. Diagnostic entry absent; default application does not enable motors.
+Final ELF SHA256: f3b8e1623d49317efea540276a9b1c618b316bc44df3498cbdee8849f6a113f2
+
+Raw evidence (local ignored build directory): build/motor-api-bench-20261107/
+summary.json / final-state.json / module-sha256.json / per-run JSON / openocd.log.

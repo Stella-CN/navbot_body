@@ -15,7 +15,7 @@ void Link_Put(uint8_t *p, uint64_t value, unsigned n)
 void Link_Float(uint8_t *p, float value)
 {
     uint32_t bits;
-    _Static_assert(sizeof(float) == 4, "float32 required");
+    static_assert(sizeof(float) == 4, "float32 required");
     memcpy(&bits, &value, sizeof(bits));
     Link_Put(p, bits, 4);
 }

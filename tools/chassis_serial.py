@@ -101,6 +101,12 @@ def decode(frame):
         return dict(valid=fields[0], q_xyzw=fields[1:])
     if msg_id == 0x23 and len(p) == 80:
         return dict(zip(STATUS, struct.unpack('<20I', p)))
+    if msg_id == 0x24 and len(p) == 80:
+        v = struct.unpack('<8I8f4i', p)
+        result = dict(zip(('state', 'fault', 'applied_seq', 'command_age_ms',
+                          'configured', 'request_seq', 'result', 'valid'), v[:8]))
+        result.update(target=v[8:12], ramp=v[12:16], duty=v[16:20])
+        return result
     raise ValueError(f'unexpected frame id/length: {msg_id:#x}/{len(p)}')
 
 class Client:
@@ -163,6 +169,8 @@ class Client:
 
 def exercise(client):
     hello = client.request(1)['data']
+    if hello['caps'] & 0x10:
+        raise ValueError('motion firmware: use motion_protocol_test.py for protocol checks')
     assert hello['motor_present_mask'] == 0 and hello['imu_id'] == 0xea, hello
     # Frame noise, overlength header, wrong version, corrupted CRC, truncated frame.
     bad = bytearray(encode(0x12, seq=client.seq, session=client.session))
@@ -224,6 +232,7 @@ def main():
     latencies = []
     try:
         report['hello'] = exercise(client) if args.test else client.request(1)['data']
+        motion_firmware = bool(report['hello']['caps'] & 0x10)
         # Warmup/calibration before measurement, while draining incoming data.
         limit = time.monotonic() + 15
         while time.monotonic() < limit:
@@ -256,13 +265,16 @@ def main():
                         samples[msg] += 1
                     previous[msg] = f['timestamp_us']
                 if msg == 0x20:
-                    assert d['valid'] == 0 and all(v == 0 for v in d['count']), d
+                    if motion_firmware:
+                        assert d['valid'] == 15 and all(math.isfinite(v) for v in d['omega']), d
+                    else:
+                        assert d['valid'] == 0 and all(v == 0 for v in d['count']), d
                 if msg == 0x21:
                     assert d['valid'] == 1 and all(math.isfinite(x) for x in d['gyro'] + d['accel']), d
                 if msg == 0x22:
                     assert d['valid'] == 1 and abs(sum(x*x for x in d['q_xyzw']) - 1) < 0.01, d
                 if msg == 0x23:
-                    assert d['motion_enabled'] == 0 and d['wheel_valid'] == 0, d
+                    assert d['motion_enabled'] == 0 and d['wheel_valid'] == (15 if motion_firmware else 0), d
                     assert all(d[k] == 0 for k in ('rx_overflows', 'uart_errors', 'tx_drops', 'response_drops', 'tx_errors')), d
                 if msg == 2:
                     rtt = f['host_us'] - d['t1'] - (d['t3'] - d['t2'])

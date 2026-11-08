@@ -61,10 +61,13 @@ def main():
                 for t, value in [('TIM2', '4294967295'), ('TIM3', '65535'),
                                  ('TIM4', '65535'), ('TIM5', '4294967295')]),
             'quadrature encoder counters use native 32/16/16/32-bit ranges')
-    app = '\n'.join(p.read_text() for directory in ('Core', 'Applications', 'BSP') for p in (ROOT / directory).rglob('*.c'))
-    require(not re.search(r'HAL_TIM_(?:PWM|Encoder)_Start\s*\(', app),
-            'bench firmware never starts motors or unconfigured encoders')
-    link = read('Applications/chassis_link.c')
+    app = '\n'.join(p.read_text() for directory in ('Core', 'Applications', 'BSP') for p in (ROOT / directory).rglob('*') if p.suffix in ('.c', '.cpp'))
+    control_source = read('Applications/app_tasks.cpp')
+    require('wheels.initialize(' in control_source and 'wheels.updateFeedback(' in control_source
+            and not re.search(r'\.(?:enable|setDuty|brake)\s*\(', control_source)
+            and not re.search(r'HAL_TIM_PWM_Start\s*\(', main_c),
+            'default application starts encoder feedback without enabling motor outputs')
+    link = read('Applications/chassis_link.cpp')
     require('HAL_UARTEx_ReceiveToIdle_DMA(&huart3' in link
             and 'HAL_UART_Transmit_DMA(&huart3' in link
             and 'ack(f, 4)' in link,
@@ -89,14 +92,14 @@ def main():
             and ioc.get('NVIC.PriorityGroup') == 'NVIC_PRIORITYGROUP_4',
             'RTOS-capable UART/DMA interrupts at logical priority5, group4')
     rtos, cfg = read('Core/Src/freertos.c'), read('Core/Inc/FreeRTOSConfig.h')
-    application = read('Applications/app_tasks.c')
+    application = read('Applications/app_tasks.cpp')
     require(all(f'.cb_mem = &{name}Tcb' in rtos and f'.stack_mem = &{name}Stack[0]' in rtos
                 for name in ('control', 'comm', 'sensor', 'monitor')),
             'all four application tasks own static TCBs and stacks')
     require(all(f'osKernelGetTickFreq() / {hz}U' in function(application, 'Navbot_' + role + 'Task')
                 and 'osDelayUntil(deadline)' in function(application, 'Navbot_' + role + 'Task')
-                for role, hz in [('Control', 100), ('Comm', 200), ('Sensor', 100), ('Monitor', 10)]),
-            'absolute task periods: control100 / comm200 / sensor100 / monitor10 Hz')
+                for role, hz in [('Control', 500), ('Comm', 200), ('Sensor', 100), ('Monitor', 10)]),
+            'absolute task periods: control500 / comm200 / sensor100 / monitor10 Hz')
     require(bool(re.search(r'configCHECK_FOR_STACK_OVERFLOW\s+2', cfg))
             and bool(re.search(r'configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY\s+5', cfg))
             and all('C30D_TemplatePanic();' in function(rtos, f) for f in
@@ -126,7 +129,7 @@ def main():
     artifacts = [p for directory in ('Core', 'Applications', 'BSP', 'Drivers', 'Middlewares')
                  for p in (ROOT / directory).rglob('*') if p.suffix in ('.elf', '.o', '.obj', '.bin', '.hex')]
     require(not artifacts, 'source directories contain no firmware build artifacts (build/ is permitted)')
-    require('project(navbot_body LANGUAGES C ASM)' in read('CMakeLists.txt')
+    require('project(navbot_body LANGUAGES C CXX ASM)' in read('CMakeLists.txt')
             and ioc.get('ProjectManager.ProjectName') == 'navbot_body'
             and ioc.get('ProjectManager.ProjectFileName') == 'navbot_body.ioc',
             'project/IOC/workspace identifiers consistently use navbot_body')
@@ -135,7 +138,7 @@ def main():
     require(cmake_root.index('set(CMAKE_TOOLCHAIN_FILE') < cmake_root.index('\nproject(')
             and 'CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY' in read('cmake/gcc-arm-none-eabi.cmake'),
             'cross toolchain selected before language detection; compiler probes limited to static libraries')
-    require('Applications/app_tasks.c' in cmake_root and 'BSP/C30D/c30d_safety.c' in cmake_root
+    require('Applications/app_tasks.cpp' in cmake_root and 'BSP/C30D/c30d_safety.c' in cmake_root
             and 'GLOB' not in cmake_root and 'target_include_directories(stm32cubemx INTERFACE' in cmake_root,
             'explicit Applications/BSP source list; BSP declarations propagate to RTOS/HAL objects')
     require('target_link_libraries(${PROJECT_NAME} PRIVATE' not in cmake_root,
@@ -181,7 +184,7 @@ def main():
             'battery ADC: PB0/channel8 only, 21MHz ADC clock, 12-bit, 480-cycle sample')
     require(all(ioc.get(pin + '.GPIO_PuPd') == 'GPIO_PULLDOWN'
                 for pin in ('PB8', 'PB9', 'PE5', 'PE6', 'PE9', 'PE11', 'PE13', 'PE14')),
-            'PWM pins retain pulldowns while outputs remain unstarted')
+            'PWM pins retain pulldowns for disabled outputs')
     require(all(text in tim for text in ('GPIO_AF1_TIM1', 'GPIO_AF1_TIM2', 'GPIO_AF2_TIM3',
                                          'GPIO_AF2_TIM4', 'GPIO_AF2_TIM5', 'GPIO_AF3_TIM9',
                                          'GPIO_AF3_TIM10', 'GPIO_AF3_TIM11')),
@@ -206,7 +209,7 @@ def main():
                 ioc['FREERTOS.Tasks01'].split(';'), (2048, 2048, 1536, 2048))),
             'task stack word counts agree with documented byte budgets (7680B total)')
     require(not re.search(r'\b(malloc|calloc|realloc|free|pvPortMalloc|vPortFree)\s*\(',
-                          '\n'.join(p.read_text() for directory in ('Applications', 'BSP') for p in (ROOT / directory).rglob('*.c'))),
+                          '\n'.join(p.read_text() for directory in ('Applications', 'BSP') for p in (ROOT / directory).rglob('*') if p.suffix in ('.c', '.cpp'))),
             'maintained task/BSP paths have no heap allocation or ownership transfers')
     require('HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4)' in read('Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c')
             and '#define vPortSVCHandler    SVC_Handler' in cfg

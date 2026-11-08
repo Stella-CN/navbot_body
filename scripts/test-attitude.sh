@@ -11,6 +11,9 @@ TEST_DIR="$(mktemp -d "${TMPDIR:-/tmp}/navbot-attitude-test.XXXXXX")"
 trap 'rm -rf "$TEST_DIR"' EXIT
 "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -fsanitize=undefined \
     -I "$ROOT/Applications" -I "$ROOT/BSP/C30D" \
-    "$ROOT/tests/attitude_test.c" "$ROOT/Applications/attitude.c" \
+    -c "$ROOT/tests/attitude_test.c" -o "$TEST_DIR/test.o"
+"${CXX:-c++}" -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined \
+    -I "$ROOT/Applications" -I "$ROOT/BSP/C30D" \
+    "$TEST_DIR/test.o" "$ROOT/Applications/attitude.cpp" \
     -o "$TEST_DIR/attitude-test" -lm
 "$TEST_DIR/attitude-test"

@@ -1,4 +1,5 @@
 #include "chassis_link.h"
+#include "motion_service.hpp"
 #include "link_protocol.h"
 #include "imu_diagnostics.h"
 #include "usart.h"
@@ -127,6 +128,7 @@ static void handle(const LinkFrame *f)
     {
         if (session != f->session)
         {
+            Navbot_MotionStop(f->sequence);
             session = f->session;
             have_rx_seq = 0;
             response_head = response_tail = 0;
@@ -158,17 +160,17 @@ static void handle(const LinkFrame *f)
         if (reply)
         {
             Link_Put(reply->payload + 4, boot_id, 8);
-            Link_Put(reply->payload + 12, 0x00010000U, 4); /* bench firmware 1.0.0 */
-            Link_Put(reply->payload + 16, 0x0f, 4);        /* raw, attitude, time, bench-disabled */
+            Link_Put(reply->payload + 12, 0x00010102U, 4); /* motion firmware 1.1.2 */
+            Link_Put(reply->payload + 16, 0x37, 4);        /* raw, attitude, time, wheel control, body configuration */
             Link_Put(reply->payload + 20, 1000, 4);        /* timestamp resolution us */
             Link_Put(reply->payload + 24, 100, 2);
             Link_Put(reply->payload + 26, 50, 2);
             Link_Put(reply->payload + 28, 100, 2);
             Link_Put(reply->payload + 30, 10, 2);
             reply->payload[32] = 0xea;
-            reply->payload[33] = 0; /* IMU expected ID; no motors */
-            reply->payload[34] = 1; /* chip axes, no mounting transform */
-            reply->payload[35] = 1; /* timestamp denotes read-transaction start */
+            reply->payload[33] = 15; /* configured channels, not physical presence detection */
+            reply->payload[34] = 1;  /* chip axes, no mounting transform */
+            reply->payload[35] = 1;  /* timestamp denotes read-transaction start */
         }
     }
     else if (f->id == 2)
@@ -193,13 +195,15 @@ static void handle(const LinkFrame *f)
             ack(f, 2);
             return;
         }
-        C30D_ForceMotorIdle();
+        Navbot_MotionStop(f->sequence);
         ack(f, 0);
     }
-    else if (f->id == 0x10 || f->id == 0x11 || f->id == 0x13 || f->id == 0x31)
+    else if (f->id == 0x10 || f->id == 0x11 || f->id == 0x14 || f->id == 0x31)
     {
-        ack(f, 4); /* bench mode never accepts motion or configuration */
+        ack(f, Navbot_MotionRequest(f->id, f->payload, f->length, f->sequence, (uint32_t)(now_us / 1000U)));
     }
+    else if (f->id == 0x13)
+        ack(f, 4); /* Hardware faults require reinitialization. */
     else
     {
         ack(f, 1);
@@ -220,7 +224,16 @@ static void telemetry(uint32_t now)
     f->id = 0x20;
     f->length = 52;
     f->timestamp_us = now_us;
-    /* Wheel valid mask zero: no configured/connected motor encoders. */
+    auto snapshot = Navbot_MotionSnapshot();
+    const auto &motion = snapshot.motion;
+    f->timestamp_us = sample_time(now, motion.timestamp);
+    uint32_t valid = now - motion.timestamp < 30U ? motion.valid : 0U;
+    for (unsigned i = 0; i < 4; ++i)
+    {
+        Link_Put(f->payload + i * 8, (uint64_t)motion.feedback[i].total_counts, 8);
+        Link_Float(f->payload + 32 + i * 4, motion.feedback[i].rpm * .10471975512f);
+    }
+    Link_Put(f->payload + 48, valid, 4);
     append(f);
     f->id = 0x21;
     f->length = 28;
@@ -250,7 +263,7 @@ static void telemetry(uint32_t now)
         f->length = 80;
         f->timestamp_us = now_us;
         const uint32_t values[20] = {
-            0, 0, imu.health, imu.last_error, imu.sequence, imu.timestamp_ms, attitude.calibration_state,
+            motion.state == navbot::MotionState::Enabled ? 1U : 0U, valid, imu.health, imu.last_error, imu.sequence, imu.timestamp_ms, attitude.calibration_state,
             attitude.heading_epoch, parser.crc_errors, parser.length_errors, parser.version_errors,
             parser.timeouts, rx_overflows, uart_errors, tx_drops, response_drops, rejected, accepted,
             imu.recovery_count, tx_errors};
@@ -258,6 +271,20 @@ static void telemetry(uint32_t now)
             Link_Put(f->payload + i * 4, values[i], 4);
         append(f);
     }
+    f->id = 0x24;
+    f->length = 80;
+    f->timestamp_us = sample_time(now, motion.timestamp);
+    const uint32_t control[8] = {static_cast<uint32_t>(motion.state), motion.fault, motion.applied_seq,
+                                 motion.command_age, motion.configured, snapshot.request_seq, snapshot.result, valid};
+    for (unsigned i = 0; i < 8; ++i)
+        Link_Put(f->payload + 4 * i, control[i], 4);
+    for (unsigned i = 0; i < 4; ++i)
+    {
+        Link_Float(f->payload + 32 + 4 * i, motion.target[i]);
+        Link_Float(f->payload + 48 + 4 * i, motion.ramp[i]);
+        Link_Put(f->payload + 64 + 4 * i, (uint32_t)motion.duty[i], 4);
+    }
+    append(f);
 }
 void Navbot_LinkPoll(uint32_t now)
 {

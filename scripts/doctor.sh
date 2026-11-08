@@ -8,7 +8,7 @@ if [[ "${1:-}" == '--help' ]]; then
 fi
 [[ $# -eq 0 ]] || fail 'No arguments expected. Use --help.'
 missing=0
-for tool in cmake ninja python3 arm-none-eabi-gcc arm-none-eabi-objcopy arm-none-eabi-size arm-none-eabi-nm; do
+for tool in cmake ninja python3 arm-none-eabi-gcc arm-none-eabi-g++ arm-none-eabi-objcopy arm-none-eabi-size arm-none-eabi-nm; do
     if command -v "$tool" >/dev/null 2>&1; then
         printf 'OK       %-24s %s\n' "$tool" "$(command -v "$tool")"
     else

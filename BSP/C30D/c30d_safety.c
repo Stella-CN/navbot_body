@@ -1,7 +1,7 @@
 #include "c30d_safety.h"
 #include "stm32f4xx.h"
 
-/* Template interlock: there is deliberately no motor-enable API.
+/* Global fault interlock overrides every channel of the motor BSP.
  * Register access also works before HAL handle initialization. Only touch
  * peripherals whose clocks are enabled, including early error paths. */
 void C30D_ForceMotorIdle(void)
